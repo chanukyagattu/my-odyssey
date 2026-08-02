@@ -1,0 +1,117 @@
+// Real photo-library picker for iOS.
+//
+// Ships uncompiled on purpose: it is the only file in the project whose Kotlin
+// interop signatures could not be verified without a macOS toolchain, and an
+// unreferenced file still breaks the build if it does not compile. Once
+// `./gradlew :engine:jvmTest` and an Xcode run are both green, move this to:
+//
+//     composeApp/src/iosMain/kotlin/app/odyssey/IosPhotoPicker.kt
+//
+// and swap the media source in MainViewController.kt:
+//
+//     mediaSource = IosPhotoPicker(),
+//
+// Then add to iosApp/iosApp/Info.plist:
+//
+//     <key>NSPhotoLibraryUsageDescription</key>
+//     <string>My Odyssey copies the photos you choose into its own library on
+//     this device. They are never uploaded.</string>
+//
+// Note it requests the JPEG type identifier rather than the original asset:
+// iOS transcodes HEIC to JPEG on the way out, which is what the EXIF parser in
+// engine/Exif.kt reads. Asking for the original would hand back HEIC, whose
+// metadata sits in an ISO-BMFF box the parser does not speak.
+
+package app.odyssey
+
+import app.odyssey.engine.LatLng
+import app.odyssey.engine.MediaKind
+import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.usePinned
+import platform.Foundation.NSData
+import platform.Foundation.NSError
+import platform.PhotosUI.PHPickerConfiguration
+import platform.PhotosUI.PHPickerFilter
+import platform.PhotosUI.PHPickerResult
+import platform.PhotosUI.PHPickerViewController
+import platform.PhotosUI.PHPickerViewControllerDelegateProtocol
+import platform.UIKit.UIApplication
+import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
+import platform.posix.memcpy
+
+class IosPhotoPicker : MediaSource() {
+
+    override val label: String get() = "photo from library"
+
+    override val isSynthetic: Boolean get() = false
+
+    private var pending: ((ByteArray?) -> Unit)? = null
+    private val delegate = Delegate()
+
+    override fun pick(
+        kind: MediaKind,
+        near: LatLng?,
+        atEpochSeconds: Long,
+        onResult: (ByteArray?) -> Unit,
+    ) {
+        val root = UIApplication.sharedApplication.keyWindow?.rootViewController
+        if (root == null) {
+            onResult(null)
+            return
+        }
+        pending = onResult
+
+        val config = PHPickerConfiguration()
+        config.selectionLimit = 1
+        config.filter = if (kind == MediaKind.VIDEO) {
+            PHPickerFilter.videosFilter()
+        } else {
+            PHPickerFilter.imagesFilter()
+        }
+
+        val picker = PHPickerViewController(configuration = config)
+        picker.delegate = delegate
+        root.presentViewController(picker, animated = true, completion = null)
+    }
+
+    private inner class Delegate : NSObject(), PHPickerViewControllerDelegateProtocol {
+
+        override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
+            picker.dismissViewControllerAnimated(true, completion = null)
+
+            val result = didFinishPicking.firstOrNull() as? PHPickerResult
+            if (result == null) {
+                deliver(null)
+                return
+            }
+
+            result.itemProvider.loadDataRepresentationForTypeIdentifier(
+                typeIdentifier = "public.jpeg",
+            ) { data: NSData?, _: NSError? ->
+                dispatch_async(dispatch_get_main_queue()) {
+                    deliver(data?.toByteArray())
+                }
+            }
+        }
+
+        private fun deliver(bytes: ByteArray?) {
+            val callback = pending
+            pending = null
+            callback?.invoke(bytes)
+        }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun NSData.toByteArray(): ByteArray {
+    val size = length.toInt()
+    if (size == 0) return ByteArray(0)
+    val out = ByteArray(size)
+    out.usePinned { pinned ->
+        memcpy(pinned.addressOf(0), this.bytes, this.length)
+    }
+    return out
+}

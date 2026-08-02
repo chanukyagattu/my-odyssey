@@ -1,0 +1,156 @@
+package app.odyssey.engine
+
+import kotlin.math.PI
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
+
+/**
+ * Canon lifecycle state machine.
+ *
+ *   PROPOSED -> ACTIVE <-> SUSPENDED -> RETIRED
+ *
+ * Nothing about a user's completion is stored. When an entry changes state we
+ * publish a new canon release and re-fold; there is never a migration.
+ */
+enum class Lifecycle { PROPOSED, ACTIVE, SUSPENDED, RETIRED }
+
+/**
+ * Evidence hierarchy. Ordinal order is load-bearing: comparisons and the
+ * monotonic-upgrade rule both rely on it.
+ *
+ *   SELF_REPORTED < IMPORT_VERIFIED < PHOTO_VERIFIED < GPS_VERIFIED
+ *
+ * Only evidenced visits (anything above SELF_REPORTED) move a percentage.
+ */
+enum class Evidence { SELF_REPORTED, IMPORT_VERIFIED, PHOTO_VERIFIED, GPS_VERIFIED;
+
+    val label: String
+        get() = when (this) {
+            SELF_REPORTED -> "Self-reported"
+            IMPORT_VERIFIED -> "Imported"
+            PHOTO_VERIFIED -> "Photo"
+            GPS_VERIFIED -> "GPS verified"
+        }
+
+    val counts: Boolean get() = this != SELF_REPORTED
+}
+
+data class LatLng(val lat: Double, val lng: Double)
+
+private const val DEG_TO_RAD = PI / 180.0
+
+fun haversineMeters(a: LatLng, b: LatLng): Double {
+    val r = 6_371_000.0
+    val dLat = (b.lat - a.lat) * DEG_TO_RAD
+    val dLng = (b.lng - a.lng) * DEG_TO_RAD
+    val h = sin(dLat / 2) * sin(dLat / 2) +
+        cos(a.lat * DEG_TO_RAD) * cos(b.lat * DEG_TO_RAD) * sin(dLng / 2) * sin(dLng / 2)
+    return 2 * r * atan2(sqrt(h), sqrt(1 - h))
+}
+
+/**
+ * A must-go place in the canon. [placeId] is stable forever and never reused.
+ * [centroid] + [geofenceRadiusMeters] stand in for the boundary polygon in
+ * milestone 0; real point-in-polygon attribution lands with the segmentation
+ * engine (M1).
+ */
+data class CanonEntry(
+    val placeId: String,
+    val usState: String,
+    val name: String,
+    val lifecycle: Lifecycle,
+    val centroid: LatLng,
+    val minDwellSeconds: Long,
+    val geofenceRadiusMeters: Double = 3_000.0,
+    /**
+     * ISO country code. Defaults to US because canon v1 is US-only; the field
+     * exists now so that adding a second country is a data change and not a
+     * schema change.
+     */
+    val country: String = "US",
+)
+
+/**
+ * Immutable canon release. A new version is a full snapshot, never a patch in
+ * place. Every user-facing number is a fold of the ledger *against a release*,
+ * so the release id is part of the answer.
+ */
+data class CanonRelease(
+    val version: Int,
+    val entries: List<CanonEntry>,
+) {
+    init {
+        require(entries.map { it.placeId }.toSet().size == entries.size) {
+            "duplicate placeId in canon release $version"
+        }
+    }
+
+    val byId: Map<String, CanonEntry> = entries.associateBy { it.placeId }
+
+    fun active(): List<CanonEntry> = entries.filter { it.lifecycle == Lifecycle.ACTIVE }
+
+    fun countriesInPlay(): List<String> = entries
+        .filter { it.lifecycle == Lifecycle.ACTIVE || it.lifecycle == Lifecycle.SUSPENDED }
+        .map { it.country }
+        .distinct()
+        .sorted()
+
+    /** States that are part of the game: at least one ACTIVE or SUSPENDED entry. */
+    fun statesInPlay(): List<String> = entries
+        .filter { it.lifecycle == Lifecycle.ACTIVE || it.lifecycle == Lifecycle.SUSPENDED }
+        .map { it.usState }
+        .distinct()
+        .sorted()
+
+    fun entriesInState(usState: String): List<CanonEntry> = entries
+        .filter { it.usState == usState }
+        .filter { it.lifecycle != Lifecycle.RETIRED }
+        .sortedBy { it.name }
+
+    /** Returns a release with [placeIds] moved to [lifecycle], bumping the version. */
+    fun withLifecycle(placeIds: Set<String>, lifecycle: Lifecycle): CanonRelease = CanonRelease(
+        version = version + 1,
+        entries = entries.map { if (it.placeId in placeIds) it.copy(lifecycle = lifecycle) else it },
+    )
+}
+
+sealed interface LedgerEvent {
+    val eventId: String
+}
+
+/**
+ * Append-only record of a visit. `(userId, deviceId, sourceSeq)` is the
+ * idempotency key for at-least-once producers replaying offline dumps.
+ */
+data class VisitRecorded(
+    override val eventId: String,
+    val userId: String,
+    val placeId: String,
+    val startEpochSec: Long,
+    val endEpochSec: Long,
+    val evidence: Evidence,
+    val deviceId: String? = null,
+    val sourceSeq: Long? = null,
+) : LedgerEvent {
+    init {
+        require(endEpochSec > startEpochSec) { "visit must have positive dwell" }
+    }
+
+    val dwellSeconds: Long get() = endEpochSec - startEpochSec
+}
+
+/** Compensating event. The original is never mutated or deleted. */
+data class VisitRevoked(
+    override val eventId: String,
+    val refEventId: String,
+    val reason: String,
+) : LedgerEvent
+
+/** Evidence may only move up (invariant 2.4: evidence monotonicity). */
+data class EvidenceUpgraded(
+    override val eventId: String,
+    val refEventId: String,
+    val newEvidence: Evidence,
+) : LedgerEvent
