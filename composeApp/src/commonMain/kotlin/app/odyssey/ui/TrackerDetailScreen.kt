@@ -166,6 +166,7 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         StateRow(
                             code = code,
+                            name = snap.canon.regionName(code),
                             done = done,
                             total = total,
                             complete = code in r.regionsComplete,
@@ -203,6 +204,7 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
 @Composable
 private fun StateRow(
     code: String,
+    name: String,
     done: Int,
     total: Int,
     complete: Boolean,
@@ -230,9 +232,16 @@ private fun StateRow(
             .clickable { onClick() }
             .padding(14.dp),
     ) {
-        Text(code, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Palette.Text, modifier = Modifier.width(34.dp))
+        // Show "UT", not "US-UT" — the country is already the page you are on.
+        Text(
+            code.substringAfterLast('-'),
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+            color = Palette.Text,
+            modifier = Modifier.width(40.dp),
+        )
         Column(modifier = Modifier.weight(1f)) {
-            Text(snap.canon.regionName(code), fontSize = 14.sp, color = Palette.Text)
+            Text(name, fontSize = 14.sp, color = Palette.Text)
             Box(modifier = Modifier.height(6.dp))
             MiniBar(
                 fraction = if (total == 0) 0f else done.toFloat() / total,
