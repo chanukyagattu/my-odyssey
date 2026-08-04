@@ -144,6 +144,67 @@ private fun TabPill(text: String, selected: Boolean, modifier: Modifier, onClick
 }
 
 /**
+ * One ring, drawn identically everywhere: the app icon, the big dials on
+ * P3–P6, and the small W/C/S selector on P7–P9. Every progress circle in the
+ * product is this function.
+ */
+private fun DrawScope.progressRing(
+    fraction: Float,
+    track: Color,
+    from: Color,
+    to: Color,
+    marker: Color,
+    strokeWidth: Float,
+    alpha: Float = 1f,
+) {
+    val inset = strokeWidth / 2
+    val topLeft = Offset(inset, inset)
+    val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+    val sweep = 360f * fraction.coerceIn(0f, 1f)
+
+    // The track is thinner than the progress so the filled part dominates.
+    drawArc(
+        color = track.copy(alpha = alpha),
+        startAngle = -90f,
+        sweepAngle = 360f,
+        useCenter = false,
+        topLeft = topLeft,
+        size = arcSize,
+        style = Stroke(width = strokeWidth * 0.62f),
+    )
+
+    if (sweep <= 0f) return
+
+    // Rotating the canvas rather than the gradient: a sweep gradient begins at
+    // three o'clock, and the arc begins at twelve, so without this the colours
+    // land a quarter-turn away from where the stroke actually starts.
+    rotate(degrees = -90f) {
+        drawArc(
+            brush = Brush.sweepGradient(
+                0f to from,
+                (sweep / 360f).coerceIn(0.01f, 1f) to to,
+                1f to to,
+                center = center,
+            ),
+            startAngle = 0f,
+            sweepAngle = sweep,
+            useCenter = false,
+            topLeft = topLeft,
+            size = arcSize,
+            style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+            alpha = alpha,
+        )
+    }
+
+    // Where progress began.
+    drawCircle(
+        color = marker.copy(alpha = alpha),
+        radius = strokeWidth * 0.26f,
+        center = Offset(size.width / 2, inset),
+    )
+}
+
+/**
  * The circles from the wireframe. The caption inside says what the dial counts;
  * the pill underneath is the scope it counts within.
  */
@@ -161,7 +222,9 @@ fun TrackerDial(
     onShare: (() -> Unit)? = null,
 ) {
     // A DrawScope lambda is not a composable, so theme colours are read here.
-    val trackColor = Palette.SurfaceHigh
+    val trackColor = Palette.Remaining
+    val markerColor = Palette.Text
+    val far = if (accent == Palette.Verified) Palette.VerifiedFar else accent
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         Box(
@@ -172,29 +235,14 @@ fun TrackerDial(
                 .clickable(enabled = onClick != null) { onClick?.invoke() },
         ) {
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val stroke = (diameter / 11f).dp.toPx()
-                val inset = stroke / 2
-                val arc = Size(size.width - stroke, size.height - stroke)
-                drawArc(
-                    color = trackColor,
-                    startAngle = -90f,
-                    sweepAngle = 360f,
-                    useCenter = false,
-                    topLeft = Offset(inset, inset),
-                    size = arc,
-                    style = Stroke(width = stroke, cap = StrokeCap.Round),
+                progressRing(
+                    fraction = fraction,
+                    track = trackColor,
+                    from = accent,
+                    to = far,
+                    marker = markerColor,
+                    strokeWidth = (diameter / 11f).dp.toPx(),
                 )
-                if (fraction > 0f) {
-                    drawArc(
-                        color = accent,
-                        startAngle = -90f,
-                        sweepAngle = 360f * fraction.coerceIn(0f, 1f),
-                        useCenter = false,
-                        topLeft = Offset(inset, inset),
-                        size = arc,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round),
-                    )
-                }
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -274,54 +322,70 @@ fun ScopePie(
 ) {
     val done = Palette.Verified
     val togo = Palette.Remaining
-    val dim = if (selected) 1f else 0.4f
+    val marker = Palette.Text
+    val dim = if (selected) 1f else 0.38f
 
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .size(58.dp)
-            .clip(RoundedCornerShape(29.dp))
-            .border(
-                width = if (selected) 2.dp else 1.dp,
-                color = if (selected) Palette.Verified else Palette.Line,
-                shape = RoundedCornerShape(29.dp),
-            )
-            .clickable { onClick() }
-            .padding(6.dp),
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val stroke = size.minDimension * 0.26f
-            val inset = stroke / 2
-            val arc = Size(size.width - stroke, size.height - stroke)
-            val topLeft = Offset(inset, inset)
-            val sweep = 360f * fraction.coerceIn(0f, 1f)
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(58.dp)
+                .clip(RoundedCornerShape(29.dp))
+                .clickable { onClick() },
+        ) {
+            Canvas(modifier = Modifier.fillMaxSize().padding(3.dp)) {
+                val stroke = size.minDimension * 0.20f
+                // The track is thinner and quieter than the progress, so the
+                // eye lands on what has been done rather than what has not.
+                val trackStroke = stroke * 0.62f
+                val inset = stroke / 2
+                val arc = Size(size.width - stroke, size.height - stroke)
+                val topLeft = Offset(inset, inset)
+                val sweep = 360f * fraction.coerceIn(0f, 1f)
 
-            drawArc(
-                color = togo.copy(alpha = dim),
-                startAngle = -90f,
-                sweepAngle = 360f,
-                useCenter = false,
-                topLeft = topLeft,
-                size = arc,
-                style = Stroke(width = stroke),
-            )
-            if (sweep > 0f) {
                 drawArc(
-                    color = done.copy(alpha = dim),
+                    color = togo.copy(alpha = dim),
                     startAngle = -90f,
-                    sweepAngle = sweep,
+                    sweepAngle = 360f,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arc,
-                    style = Stroke(width = stroke, cap = StrokeCap.Butt),
+                    style = Stroke(width = trackStroke),
                 )
+                if (sweep > 0f) {
+                    drawArc(
+                        color = done.copy(alpha = dim),
+                        startAngle = -90f,
+                        sweepAngle = sweep,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arc,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round),
+                    )
+                    // "You started here", matching the app icon.
+                    drawCircle(
+                        color = marker.copy(alpha = dim),
+                        radius = stroke * 0.26f,
+                        center = Offset(size.width / 2, inset),
+                    )
+                }
             }
+            Text(
+                letter,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = if (selected) Palette.Text else Palette.Muted,
+            )
         }
-        Text(
-            letter,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = if (selected) Palette.Text else Palette.Muted,
+
+        // Selection is a dot, not a colour — the pies are already carrying
+        // two colours of their own.
+        Box(modifier = Modifier.height(6.dp))
+        Box(
+            modifier = Modifier
+                .size(5.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(if (selected) Palette.Verified else Color.Transparent),
         )
     }
 }

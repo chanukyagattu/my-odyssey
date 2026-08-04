@@ -22,6 +22,10 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<!-- Add-only. My Odyssey saves share cards you create; it never reads your
+	     library, which is why NSPhotoLibraryUsageDescription is absent. -->
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Saves the progress card you just created to your Photos. My Odyssey only ever adds images you make here — it does not read your photo library.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>My Odyssey uses your location only while the app is open, to verify that you were actually at a canon place. Unverified visits are still saved — they just don't count toward your completion percentages.</string>
 	<key>UILaunchScreen</key>

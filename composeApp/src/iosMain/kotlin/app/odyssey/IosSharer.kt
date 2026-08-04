@@ -14,6 +14,10 @@ import platform.UIKit.NSMutableParagraphStyle
 import platform.UIKit.NSForegroundColorAttributeName
 import platform.UIKit.NSParagraphStyleAttributeName
 import platform.UIKit.NSTextAlignmentCenter
+import platform.UIKit.UIActivityItemSourceProtocol
+import platform.UIKit.UIActivityType
+import platform.UIKit.UIActivityTypeAssignToContact
+import platform.UIKit.UIActivityTypeSaveToCameraRoll
 import platform.UIKit.UIActivityViewController
 import platform.UIKit.UIApplication
 import platform.UIKit.UIBezierPath
@@ -23,6 +27,7 @@ import platform.UIKit.UIGraphicsImageRenderer
 import platform.UIKit.UIImage
 import platform.UIKit.UIRectFill
 import platform.UIKit.drawInRect
+import platform.darwin.NSObject
 import kotlin.math.PI
 
 /**
@@ -42,7 +47,18 @@ class IosSharer : Sharer {
 
     override fun shareCard(card: ShareCard) {
         val image = render(card)
-        if (image == null) present(listOf(card.caption)) else present(listOf(image, card.caption))
+        if (image == null) {
+            present(listOf(card.caption))
+        } else {
+            // Two item sources rather than [image, caption].
+            //
+            // Save to Photos cannot handle text, so a mixed array makes iOS drop
+            // the activity entirely — which is why "Save Image" never appeared.
+            // An item source lets each item answer per activity: the image goes
+            // everywhere, the caption withholds itself from Save and Assign to
+            // Contact.
+            present(listOf(ImageItem(image), CaptionItem(card.caption)))
+        }
     }
 
     // ---------- presentation ----------
@@ -66,14 +82,15 @@ class IosSharer : Sharer {
 
             ring(card.fraction.toDouble())
 
-            text(card.bigValue, 0.0, 690.0, W, 190.0, 150.0, TEXT, bold = true)
-            text(card.bigCaption, 0.0, 880.0, W, 60.0, 34.0, MUTED)
+            // Percentage alone inside the ring; the fraction reads underneath.
+            text(card.bigValue, 0.0, 680.0, W, 200.0, 160.0, TEXT, bold = true)
+            text(card.countLine, 0.0, 1130.0, W, 60.0, 38.0, TEXT)
 
             var x = 140.0
             val slot = (W - 280.0) / card.stats.size.coerceAtLeast(1)
             for (stat in card.stats) {
-                text(stat.value, x, 1240.0, slot, 90.0, 66.0, VERIFIED, bold = true)
-                text(stat.label, x, 1330.0, slot, 50.0, 28.0, MUTED)
+                text(stat.value, x, 1270.0, slot, 90.0, 62.0, VERIFIED, bold = true)
+                text(stat.label, x, 1356.0, slot, 50.0, 28.0, MUTED)
                 x += slot
             }
 
@@ -121,6 +138,35 @@ class IosSharer : Sharer {
             NSParagraphStyleAttributeName to paragraph,
         )
         (value as NSString).drawInRect(CGRectMake(x, y, width, height), withAttributes = attributes)
+    }
+
+    /** Offers the card image to every activity, including Save to Photos. */
+    private class ImageItem(private val image: UIImage) : NSObject(), UIActivityItemSourceProtocol {
+
+        override fun activityViewControllerPlaceholderItem(
+            activityViewController: UIActivityViewController,
+        ): Any = image
+
+        override fun activityViewController(
+            activityViewController: UIActivityViewController,
+            itemForActivityType: UIActivityType?,
+        ): Any = image
+    }
+
+    /** Offers the caption to everything except activities that only take an image. */
+    private class CaptionItem(private val caption: String) : NSObject(), UIActivityItemSourceProtocol {
+
+        override fun activityViewControllerPlaceholderItem(
+            activityViewController: UIActivityViewController,
+        ): Any = caption
+
+        override fun activityViewController(
+            activityViewController: UIActivityViewController,
+            itemForActivityType: UIActivityType?,
+        ): Any? = when (itemForActivityType) {
+            UIActivityTypeSaveToCameraRoll, UIActivityTypeAssignToContact -> null
+            else -> caption
+        }
     }
 
     private companion object {

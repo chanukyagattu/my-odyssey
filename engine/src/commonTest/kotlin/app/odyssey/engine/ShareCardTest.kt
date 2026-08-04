@@ -89,11 +89,24 @@ class ShareCardTest {
     // ---------- numbers come from the fold ----------
 
     @Test
+    fun theRingShowsAPercentageAndNothingElse() {
+        // A percentage reads at a glance in a story; a fraction has to be parsed.
+        val snap = snapshotWith("us-ut-zion", "us-wy-yellowstone")
+        for (scope in Scope.entries) {
+            val big = shareCardFor(snap, scope, user).bigValue
+            assertTrue(big.endsWith("%"), "$scope ring showed '$big' instead of a percentage")
+            assertFalse(big.contains("/"), "$scope ring showed a fraction: $big")
+        }
+    }
+
+    @Test
     fun theWorldCardCountsPlaces() {
         val snap = snapshotWith("us-ut-zion", "us-wy-yellowstone")
         val card = shareCardFor(snap, Scope.WORLD, user)
-        assertEquals("2/100", card.bigValue)
+        assertEquals("2%", card.bigValue)
+        assertEquals("2 / 100 must-go places verified", card.countLine)
         assertTrue(card.stats.any { it.value == "0/50" && it.label == "states complete" })
+        assertTrue(card.stats.any { it.value == "1/195" && it.label == "countries in canon" })
     }
 
     @Test
@@ -101,20 +114,24 @@ class ShareCardTest {
         val snap = snapshotWith("us-ut-zion", "us-ut-arches")
         val card = shareCardFor(snap, Scope.COUNTRY, user)
         assertEquals("2%", card.bigValue, "1 of 50 states complete")
+        assertEquals("1 / 50 states complete", card.countLine)
         assertTrue(card.stats.any { it.value == "1/50" })
     }
 
     @Test
     fun theStateCardCountsPlacesInTheSelectedState() {
         val snap = snapshotWith("us-ut-zion", state = "UT")
-        assertEquals("1/2", shareCardFor(snap, Scope.STATE, user).bigValue)
+        val card = shareCardFor(snap, Scope.STATE, user)
+        assertEquals("50%", card.bigValue)
+        assertEquals("1 / 2 must-go places verified", card.countLine)
     }
 
     @Test
     fun aCompleteStateSaysSo() {
         val snap = snapshotWith("us-ut-zion", "us-ut-arches", state = "UT")
         val card = shareCardFor(snap, Scope.STATE, user)
-        assertEquals("2/2", card.bigValue)
+        assertEquals("100%", card.bigValue)
+        assertEquals("2 / 2 must-go places verified", card.countLine)
         assertTrue(card.verifiedLine.contains("complete"))
     }
 

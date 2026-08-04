@@ -29,6 +29,8 @@ data class OdysseyColors(
     val surfaceHigh: Color,
     val line: Color,
     val verified: Color,
+    /** The far end of the progress gradient. Every ring travels verified -> this. */
+    val verifiedFar: Color,
     val pending: Color,
     /**
      * "Still to visit" — the unfilled arc of a pie.
@@ -55,6 +57,7 @@ val DarkColors = OdysseyColors(
     surfaceHigh = Color(0xFF1D2740),
     line = Color(0xFF2A3557),
     verified = Color(0xFF3DDC97),
+    verifiedFar = Color(0xFF2BB8D9),
     pending = Color(0xFFF2C14E),
     remaining = Color(0xFFDDE6F2),
     danger = Color(0xFFE5646E),
@@ -74,6 +77,7 @@ val LightColors = OdysseyColors(
     surfaceHigh = Color(0xFFE4EAF5),
     line = Color(0xFFD2DBEA),
     verified = Color(0xFF0E8A5F),
+    verifiedFar = Color(0xFF0E7C97),
     pending = Color(0xFFA9760A),
     remaining = Color(0xFFB7C6DC),
     danger = Color(0xFFC22F3B),
@@ -95,6 +99,7 @@ object Palette {
     val SurfaceHigh: Color @Composable get() = LocalOdysseyColors.current.surfaceHigh
     val Line: Color @Composable get() = LocalOdysseyColors.current.line
     val Verified: Color @Composable get() = LocalOdysseyColors.current.verified
+    val VerifiedFar: Color @Composable get() = LocalOdysseyColors.current.verifiedFar
     val Pending: Color @Composable get() = LocalOdysseyColors.current.pending
     val Remaining: Color @Composable get() = LocalOdysseyColors.current.remaining
     val Danger: Color @Composable get() = LocalOdysseyColors.current.danger

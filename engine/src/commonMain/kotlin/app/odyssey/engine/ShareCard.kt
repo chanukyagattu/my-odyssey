@@ -19,9 +19,13 @@ package app.odyssey.engine
 data class CardStat(val value: String, val label: String)
 
 data class ShareCard(
-    /** Big centre number, e.g. "48%" or "12/50". */
+    /**
+     * The only thing inside the ring. A percentage reads at a glance in a
+     * story; a fraction has to be parsed.
+     */
     val bigValue: String,
-    val bigCaption: String,
+    /** Directly under the ring, e.g. "12 / 100 must-go places verified". */
+    val countLine: String,
     /** Ring fill, 0..1. */
     val fraction: Float,
     /** The scope this card is about, e.g. "UNITED STATES". */
@@ -36,7 +40,7 @@ data class ShareCard(
 ) {
     /** Everything the renderer will draw. Used by the privacy test. */
     val allText: List<String>
-        get() = listOf(bigValue, bigCaption, scopeLabel, verifiedLine, canonLine, handle, caption) +
+        get() = listOf(bigValue, countLine, scopeLabel, verifiedLine, canonLine, handle, caption) +
             stats.flatMap { listOf(it.value, it.label) }
 }
 
@@ -56,13 +60,13 @@ fun shareCardFor(
 
     return when (scope) {
         Scope.WORLD -> ShareCard(
-            bigValue = "${r.placesCredited.size}/${r.placesDenominator}",
-            bigCaption = "must-go places verified",
+            bigValue = pct(r.placesCoveragePct),
+            countLine = "${r.placesCredited.size} / ${r.placesDenominator} must-go places verified",
             fraction = (r.placesCoveragePct / 100.0).toFloat(),
             scopeLabel = "THE WORLD",
             stats = listOf(
                 CardStat("${r.statesComplete.size}/${r.stateDenominator}", "states complete"),
-                CardStat(pct(r.placesCoveragePct), "of the canon"),
+                CardStat("1/${Countries.TOTAL_IN_WORLD}", "countries in canon"),
             ),
             verifiedLine = "Every visit GPS-verified",
             canonLine = canonLine,
@@ -73,7 +77,7 @@ fun shareCardFor(
 
         Scope.COUNTRY -> ShareCard(
             bigValue = pct(r.stateCoveragePct),
-            bigCaption = "of the United States",
+            countLine = "${r.statesComplete.size} / ${r.stateDenominator} states complete",
             fraction = (r.stateCoveragePct / 100.0).toFloat(),
             scopeLabel = "UNITED STATES",
             stats = listOf(
@@ -91,9 +95,10 @@ fun shareCardFor(
             // Note the state is NOT named. Naming it turns a score into a
             // location, and the card is public forever.
             val (done, total) = r.stateProgress(snapshot.selection.usState)
+            val statePct = if (total == 0) 0.0 else 100.0 * done / total
             ShareCard(
-                bigValue = "$done/$total",
-                bigCaption = "places verified in this state",
+                bigValue = pct(statePct),
+                countLine = "$done / $total must-go places verified",
                 fraction = if (total == 0) 0f else done.toFloat() / total,
                 scopeLabel = "ONE STATE DOWN",
                 stats = listOf(
