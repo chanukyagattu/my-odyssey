@@ -8,12 +8,9 @@ import kotlinx.cinterop.usePinned
 import platform.Foundation.NSData
 import platform.Foundation.NSError
 import platform.PhotosUI.PHPickerConfiguration
-import platform.PhotosUI.PHPickerFilter
 import platform.PhotosUI.PHPickerResult
 import platform.PhotosUI.PHPickerViewController
 import platform.PhotosUI.PHPickerViewControllerDelegateProtocol
-import platform.PhotosUI.imagesFilter
-import platform.PhotosUI.videosFilter
 import platform.UIKit.UIApplication
 import platform.darwin.NSObject
 import platform.darwin.dispatch_async
@@ -57,11 +54,11 @@ class IosPhotoPicker(private val selectionLimit: Long = 10) : MediaSource() {
 
         val config = PHPickerConfiguration()
         config.selectionLimit = selectionLimit
-        config.filter = if (kind == MediaKind.VIDEO) {
-            PHPickerFilter.videosFilter()
-        } else {
-            PHPickerFilter.imagesFilter()
-        }
+        // No PHPickerFilter. Its factories are class methods whose Kotlin
+        // binding shape is not worth another build cycle to pin down, and the
+        // filter is not load-bearing: anything without a `public.jpeg`
+        // representation returns null below and is dropped. A video selected
+        // by mistake is skipped rather than mis-imported.
 
         val picker = PHPickerViewController(configuration = config)
         picker.delegate = delegate
