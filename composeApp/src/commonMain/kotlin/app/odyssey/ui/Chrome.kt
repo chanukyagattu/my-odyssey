@@ -214,7 +214,6 @@ private fun DrawScope.progressRing(
 @Composable
 fun TrackerDial(
     diameter: Int,
-    caption: String,
     value: String,
     detail: String,
     scopeLabel: String,
@@ -223,6 +222,7 @@ fun TrackerDial(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     onShare: (() -> Unit)? = null,
+    onScope: (() -> Unit)? = null,
 ) {
     // A DrawScope lambda is not a composable, so theme colours are read here.
     val trackColor = Palette.Remaining
@@ -247,27 +247,21 @@ fun TrackerDial(
                     strokeWidth = (diameter / 11f).dp.toPx(),
                 )
             }
+            // Just the number and what it counts. The dial's label lives on the
+            // pill underneath, so repeating it inside was noise.
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(horizontal = (diameter / 7).dp),
             ) {
                 Text(
-                    caption,
-                    fontSize = if (diameter > 180) 12.sp else 10.sp,
-                    color = Palette.Muted,
-                    textAlign = TextAlign.Center,
-                    lineHeight = if (diameter > 180) 15.sp else 12.sp,
-                )
-                Box(modifier = Modifier.height(6.dp))
-                Text(
                     value,
-                    fontSize = if (diameter > 180) 34.sp else 20.sp,
+                    fontSize = if (diameter > 180) 40.sp else 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = Palette.Text,
                 )
                 Text(
                     detail,
-                    fontSize = if (diameter > 180) 12.sp else 9.sp,
+                    fontSize = if (diameter > 180) 13.sp else 10.sp,
                     color = Palette.Muted,
                     textAlign = TextAlign.Center,
                 )
@@ -279,11 +273,12 @@ fun TrackerDial(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(6.dp))
-                .border(1.dp, Palette.Line, RoundedCornerShape(6.dp))
+                .border(1.dp, if (onScope != null) Palette.Verified else Palette.Line, RoundedCornerShape(6.dp))
+                .clickable(enabled = onScope != null) { onScope?.invoke() }
                 .padding(horizontal = 14.dp, vertical = 5.dp),
         ) {
             Text(
-                scopeLabel.uppercase(),
+                if (onScope != null) "${scopeLabel.uppercase()}  ▾" else scopeLabel.uppercase(),
                 fontSize = 11.sp,
                 letterSpacing = 0.8.sp,
                 color = Palette.Text,

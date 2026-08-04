@@ -25,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.odyssey.AppModel
+import app.odyssey.Route
 import app.odyssey.engine.CanonEntry
 import app.odyssey.engine.CanonV1
 import app.odyssey.engine.Countries
@@ -57,35 +58,34 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
                 when (scope) {
                     Scope.WORLD -> TrackerDial(
                         diameter = 230,
-                        caption = "countries tracker",
-                        value = "1/${Countries.TOTAL_IN_WORLD}",
-                        detail = "countries in canon v${r.canonVersion}",
+                        value = "${model.countriesVisited()}/${Countries.TOTAL_IN_WORLD}",
+                        detail = "countries",
                         scopeLabel = "World",
-                        fraction = 1f / Countries.TOTAL_IN_WORLD,
+                        fraction = model.countriesVisited().toFloat() / Countries.TOTAL_IN_WORLD,
                         accent = Palette.Pending,
                         onShare = { model.shareCard(Scope.WORLD) },
                     )
 
                     Scope.COUNTRY -> TrackerDial(
                         diameter = 230,
-                        caption = "states tracker",
                         value = "${r.statesComplete.size}/${r.stateDenominator}",
-                        detail = "${r.stateCoveragePct.toInt()}% of states complete",
+                        detail = "states",
                         scopeLabel = Countries.name(snap.selection.country),
                         fraction = (r.stateCoveragePct / 100.0).toFloat(),
                         accent = Palette.Verified,
                         onShare = { model.shareCard(Scope.COUNTRY) },
+                        onScope = { model.go(Route.COUNTRY_PICKER) },
                     )
 
                     Scope.STATE -> TrackerDial(
                         diameter = 230,
-                        caption = "must-go places tracker",
                         value = "$stateDone/$stateTotal",
-                        detail = if (stateCode in r.statesComplete) "complete" else "places credited",
+                        detail = "places",
                         scopeLabel = model.stateName,
                         fraction = if (stateTotal == 0) 0f else stateDone.toFloat() / stateTotal,
                         accent = if (stateCode in r.statesComplete) Palette.Verified else Palette.Pending,
                         onShare = { model.shareCard(Scope.STATE) },
+                        onScope = { model.go(Route.STATE_PICKER) },
                     )
                 }
             }

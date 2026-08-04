@@ -76,7 +76,10 @@ class OdysseyRepository(
             seq = restored.filterIsInstance<VisitRecorded>().mapNotNull { it.sourceSeq }.maxOrNull() ?: 0
         }
         val savedState = store.read(SELECTION_KEY)
-        selection = Selection(usState = savedState ?: defaultState())
+        selection = Selection(
+            country = store.read(COUNTRY_KEY) ?: "US",
+            usState = savedState ?: defaultState(),
+        )
     }
 
     fun snapshot(): AppSnapshot = AppSnapshot(
@@ -98,6 +101,28 @@ class OdysseyRepository(
         store.write(SELECTION_KEY, usState)
         return snapshot()
     }
+
+    /**
+     * The C/S cascade is one-way: choosing a country resets the state beneath
+     * it, but choosing a state never changes the country.
+     */
+    fun selectCountry(code: String): AppSnapshot {
+        val statesThere = canon.entries
+            .filter { it.country == code && it.lifecycle != Lifecycle.RETIRED }
+            .map { it.usState }
+            .distinct()
+            .sorted()
+        selection = selection.copy(
+            country = code,
+            usState = statesThere.firstOrNull() ?: selection.usState,
+        )
+        store.write(COUNTRY_KEY, code)
+        statesThere.firstOrNull()?.let { store.write(SELECTION_KEY, it) }
+        return snapshot()
+    }
+
+    /** Countries the canon actually covers. Everything else is listed but not selectable. */
+    fun countriesInCanon(): Set<String> = canon.countriesInPlay().toSet()
 
     /**
      * Default state: the one from the most recent visit, alphabetical fallback.
@@ -300,5 +325,6 @@ class OdysseyRepository(
     companion object {
         const val LOG_KEY = "odyssey.ledger.v1"
         const val SELECTION_KEY = "odyssey.selection.state"
+        const val COUNTRY_KEY = "odyssey.selection.country"
     }
 }

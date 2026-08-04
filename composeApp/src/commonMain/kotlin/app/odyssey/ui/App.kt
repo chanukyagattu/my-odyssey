@@ -81,6 +81,16 @@ fun OdysseyApp(model: AppModel) {
                         Body { LedgerScreen(model) }
                     }
 
+                    Route.COUNTRY_PICKER -> {
+                        OdysseyBar(onBack = { model.back() }, leadingLabel = "Choose country")
+                        Body { CountryPickerScreen(model) }
+                    }
+
+                    Route.STATE_PICKER -> {
+                        OdysseyBar(onBack = { model.back() }, leadingLabel = "Choose state")
+                        Body { StatePickerScreen(model) }
+                    }
+
                     Route.FEED -> {
                         OdysseyBar(
                             onBack = { model.back() },

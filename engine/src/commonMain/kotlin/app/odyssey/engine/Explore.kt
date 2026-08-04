@@ -46,12 +46,10 @@ data class MemoryItem(
 }
 
 object Countries {
-    private val names = mapOf("US" to "United States")
+    fun name(code: String): String = CountryCatalog.name(code)
 
-    fun name(code: String): String = names[code] ?: code
-
-    /** Everything the canon does not cover yet. Rendered as one honest line, not 194 dead rows. */
-    const val TOTAL_IN_WORLD = 195
+    /** Every country there is. Canon v1 covers one of them. */
+    val TOTAL_IN_WORLD: Int get() = CountryCatalog.total
 }
 
 /**

@@ -42,7 +42,10 @@ import app.odyssey.engine.toE7
  *   P3 -> P4 WORLD | P5 COUNTRY | P6 STATE   (tracker drill-down)
  *   P3/P4 -> P7, P5 -> P8, P6 -> P9          (timeline, scope carried across)
  */
-enum class Route { LOGIN, REGISTER, HOME, WORLD, COUNTRY, STATE, TIMELINE, CAPTURE, MENU, LEDGER, FEED }
+enum class Route {
+    LOGIN, REGISTER, HOME, WORLD, COUNTRY, STATE, TIMELINE, CAPTURE, MENU, LEDGER, FEED,
+    COUNTRY_PICKER, STATE_PICKER,
+}
 
 /** The two top tabs on P3–P6. */
 enum class TopTab { TRACKER, TIMELINE }
@@ -197,6 +200,27 @@ class AppModel(
     /** Changes scope without navigating — the W/C/S pills on P7 / P8 / P9. */
     fun setScope(scope: Scope) {
         snapshot = repo.select(scope)
+    }
+
+    /** From the picker: choose, then go back to whatever asked. */
+    fun selectCountry(code: String) {
+        snapshot = repo.selectCountry(code)
+        back()
+    }
+
+    fun selectStateAndReturn(code: String) {
+        snapshot = repo.selectState(code)
+        back()
+    }
+
+    /** Countries with at least one verified place. The world dial's numerator. */
+    fun countriesVisited(): Int {
+        val credited = snapshot.result.placesCredited
+        return snapshot.canon.entries
+            .filter { it.placeId in credited }
+            .map { it.country }
+            .distinct()
+            .size
     }
 
     val scope: Scope get() = snapshot.selection.scope
