@@ -35,6 +35,18 @@ enum class Evidence { SELF_REPORTED, IMPORT_VERIFIED, PHOTO_VERIFIED, GPS_VERIFI
         }
 
     val counts: Boolean get() = this != SELF_REPORTED
+
+    /**
+     * Earns the headline percentage. Live capture only.
+     *
+     * A retrospective claim structurally cannot meet the bar the product is
+     * built on — "verified at the time" — so it is scored separately rather
+     * than being scored generously.
+     */
+    val isVerified: Boolean get() = this >= PHOTO_VERIFIED
+
+    /** Backfilled: real, shown, counted — just not toward the headline number. */
+    val isClaimOnly: Boolean get() = this == IMPORT_VERIFIED
 }
 
 data class LatLng(val lat: Double, val lng: Double)

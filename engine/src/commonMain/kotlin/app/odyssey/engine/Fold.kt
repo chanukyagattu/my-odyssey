@@ -17,12 +17,24 @@ data class FoldResult(
     val creditedEvidence: Map<String, Evidence>,
     /** placeId -> visits that exist but do not count (self-reported, or under the dwell floor) */
     val uncreditedVisits: Map<String, Int>,
+    /**
+     * Backfilled claims — places the user says they visited before installing,
+     * evidenced by imported photos. Deliberately disjoint from [placesCredited]
+     * and excluded from every headline number and from state completion.
+     */
+    val placesClaimed: Set<String> = emptySet(),
 ) {
     val placesCoveragePct: Double
         get() = if (placesDenominator == 0) 0.0 else 100.0 * placesCredited.size / placesDenominator
 
+    /** Claimed but not verified. Shown beside the headline, never as the headline. */
+    val claimedCoveragePct: Double
+        get() = if (placesDenominator == 0) 0.0 else 100.0 * placesClaimed.size / placesDenominator
+
     val stateCoveragePct: Double
         get() = if (stateDenominator == 0) 0.0 else 100.0 * statesComplete.size / stateDenominator
+
+    fun isClaimed(placeId: String): Boolean = placeId in placesClaimed
 
     fun stateProgress(usState: String): Pair<Int, Int> = statePartial[usState] ?: (0 to 0)
 
@@ -54,22 +66,30 @@ fun fold(events: Collection<LedgerEvent>, canon: CanonRelease, userId: String): 
     val denominator = canon.active()
 
     val creditedEvidence = mutableMapOf<String, Evidence>()
+    val claimed = mutableSetOf<String>()
     val uncredited = mutableMapOf<String, Int>()
 
     for (entry in denominator) {
         for ((v, ev) in liveVisits) {
             if (v.placeId != entry.placeId) continue
-            val qualifies = ev.counts && v.dwellSeconds >= entry.minDwellSeconds
-            if (qualifies) {
-                val best = creditedEvidence[entry.placeId]
-                if (best == null || ev > best) creditedEvidence[entry.placeId] = ev
-            } else {
-                uncredited[entry.placeId] = (uncredited[entry.placeId] ?: 0) + 1
+            val meetsDwell = v.dwellSeconds >= entry.minDwellSeconds
+            when {
+                // Verified at the time: this is what the headline counts.
+                ev.isVerified && meetsDwell -> {
+                    val best = creditedEvidence[entry.placeId]
+                    if (best == null || ev > best) creditedEvidence[entry.placeId] = ev
+                }
+                // Backfilled: real history, separate number.
+                ev.isClaimOnly && meetsDwell -> claimed.add(entry.placeId)
+
+                else -> uncredited[entry.placeId] = (uncredited[entry.placeId] ?: 0) + 1
             }
         }
     }
 
     val credited = creditedEvidence.keys.toSet()
+    // A place that was later verified live stops being merely claimed.
+    claimed.removeAll(credited)
 
     // States in play: any state with at least one ACTIVE or SUSPENDED entry.
     // Proposed-only states are not yet part of the game at all. Frozen: in play
@@ -96,5 +116,6 @@ fun fold(events: Collection<LedgerEvent>, canon: CanonRelease, userId: String): 
         stateDenominator = inPlay.size - frozen.size,
         creditedEvidence = creditedEvidence,
         uncreditedVisits = uncredited,
+        placesClaimed = claimed.toSet(),
     )
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import app.odyssey.AppModel
 import app.odyssey.engine.CanonEntry
 import app.odyssey.engine.CanonV1
+import app.odyssey.engine.BACKFILL_MIN_PHOTOS
 import app.odyssey.engine.Evidence
 import app.odyssey.engine.LatLng
 import app.odyssey.engine.formatBytes
@@ -235,6 +236,45 @@ fun CaptureScreen(model: AppModel, entry: CanonEntry, modifier: Modifier = Modif
                 text = if (wouldCredit) "Record verified visit" else "Record uncredited visit",
                 accent = if (wouldCredit) Palette.Verified else Palette.Pending,
             ) { model.record(entry, dwell) }
+        }
+
+        item {
+            Card {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    SectionTitle("Been here before?", "claimed, not verified")
+                    Text(
+                        "A single photo cannot show you were somewhere — anyone can be sent " +
+                            "one. Add at least $BACKFILL_MIN_PHOTOS from the visit, spread over " +
+                            "${entry.minDwellSeconds / 60} minutes and taken from different spots.",
+                        fontSize = 12.sp,
+                        color = Palette.Muted,
+                    )
+                    Box(modifier = Modifier.height(10.dp))
+                    val needed = model.photosStillNeeded()
+                    Text(
+                        if (needed > 0) {
+                            "$needed more photo(s) needed."
+                        } else {
+                            "${model.staged.size} photos staged."
+                        },
+                        fontSize = 12.sp,
+                        color = if (needed > 0) Palette.Pending else Palette.Verified,
+                    )
+                    Box(modifier = Modifier.height(12.dp))
+                    PrimaryButton(
+                        text = "Claim as a past visit",
+                        enabled = needed == 0,
+                        accent = Palette.Pending,
+                    ) { model.claimPast(entry) }
+                    Box(modifier = Modifier.height(10.dp))
+                    Text(
+                        "Claims are counted separately and can never complete a state. " +
+                            "Only a live capture earns the headline percentage.",
+                        fontSize = 11.sp,
+                        color = Palette.Muted,
+                    )
+                }
+            }
         }
     }
 }

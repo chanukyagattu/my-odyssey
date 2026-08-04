@@ -266,6 +266,7 @@ private fun PlaceRow(model: AppModel, entry: CanonEntry) {
                 when {
                     entry.lifecycle == Lifecycle.SUSPENDED -> Pill("Suspended", Palette.Muted)
                     credited -> Pill(evidence?.label ?: "Credited", Palette.Verified)
+                    snap.result.isClaimed(entry.placeId) -> Pill("Claimed, not verified", Palette.Pending)
                     attempts.isNotEmpty() -> Pill("${attempts.size} visit(s), no credit", Palette.Pending)
                     else -> Pill("Not visited", Palette.Muted)
                 }

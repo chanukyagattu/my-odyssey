@@ -101,8 +101,23 @@ fun HomeScreen(model: AppModel) {
                         )
                         Box(modifier = Modifier.height(10.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Pill("${r.placesCredited.size} credited", Palette.Verified)
-                            Pill("${r.placesDenominator - r.placesCredited.size} to go", Palette.Pending)
+                            Pill("${r.placesCredited.size} verified", Palette.Verified)
+                            if (r.placesClaimed.isNotEmpty()) {
+                                Pill("${r.placesClaimed.size} claimed", Palette.Pending)
+                            }
+                            Pill(
+                                "${r.placesDenominator - r.placesCredited.size - r.placesClaimed.size} to go",
+                                Palette.Muted,
+                            )
+                        }
+                        if (r.placesClaimed.isNotEmpty()) {
+                            Box(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Claimed places came from imported photos. They are real history, " +
+                                    "but only a live capture earns the percentage above.",
+                                fontSize = 11.sp,
+                                color = Palette.Muted,
+                            )
                         }
                     }
                 }

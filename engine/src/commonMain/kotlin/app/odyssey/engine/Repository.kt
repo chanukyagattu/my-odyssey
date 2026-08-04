@@ -181,13 +181,75 @@ class OdysseyRepository(
         if (!result.isAccepted) return result
 
         val entry = canon.byId[visit.placeId]
-        if (entry != null && photoCorroborates(attach, visit, entry)) {
+        // A backfilled claim must never promote itself to verified using the
+        // photos that made it a claim in the first place. Auto-upgrade applies
+        // to live captures only.
+        val isBackfill = visit.evidence == Evidence.IMPORT_VERIFIED
+        if (!isBackfill && entry != null && photoCorroborates(attach, visit, entry)) {
             val current = snapshot().effectiveEvidence(visit)
             if (current < Evidence.PHOTO_VERIFIED) {
                 append(EvidenceUpgraded(newEventId("u"), visit.eventId, Evidence.PHOTO_VERIFIED))
             }
         }
         return result
+    }
+
+    sealed interface ClaimOutcome {
+        data class Accepted(val visitEventId: String, val photos: Int) : ClaimOutcome
+        data class Refused(val reason: String) : ClaimOutcome
+
+        val error: String? get() = (this as? Refused)?.reason
+    }
+
+    /**
+     * Claims a place visited before the app existed.
+     *
+     * Requires a *set* of photos rather than one — see [checkBackfill] for why
+     * a single file can never establish that the user was there. What lands is
+     * an [Evidence.IMPORT_VERIFIED] visit, which the fold scores separately
+     * from live capture and which can never complete a state.
+     */
+    fun claimPastVisit(placeId: String, photos: List<ByteArray>): ClaimOutcome {
+        val entry = canon.byId[placeId] ?: return ClaimOutcome.Refused("No such place.")
+
+        val evidence = photos.map { bytes ->
+            val exif = parseJpegExif(bytes)
+            PhotoEvidence(
+                mediaId = mediaIdOf(bytes),
+                gps = exif.gps,
+                utcEpochSeconds = exif.utcEpochSeconds,
+                byteSize = bytes.size.toLong(),
+            )
+        }
+
+        // Identical files are one photo, however many times they were added.
+        val distinct = evidence.distinctBy { it.mediaId }
+
+        return when (val check = checkBackfill(entry, distinct)) {
+            is BackfillCheck.Rejected -> ClaimOutcome.Refused(check.reason)
+
+            is BackfillCheck.Accepted -> {
+                seq += 1
+                val visit = VisitRecorded(
+                    eventId = newEventId("v"),
+                    userId = userId,
+                    placeId = placeId,
+                    startEpochSec = check.startEpochSec,
+                    endEpochSec = check.endEpochSec,
+                    evidence = Evidence.IMPORT_VERIFIED,
+                    deviceId = deviceId,
+                    sourceSeq = seq,
+                )
+                val result = append(visit)
+                if (!result.isAccepted) {
+                    return ClaimOutcome.Refused(result.message ?: "That claim conflicts with your history.")
+                }
+                val keep = check.photos.map { it.mediaId }.toSet()
+                photos.filter { mediaIdOf(it) in keep }
+                    .forEach { attachMedia(visit.eventId, it, MediaKind.PHOTO) }
+                ClaimOutcome.Accepted(visit.eventId, check.photos.size)
+            }
+        }
     }
 
     /**

@@ -65,7 +65,7 @@ fun TimelineScreen(model: AppModel) {
             val (stateDone, stateTotal) = snap.result.stateProgress(snap.selection.usState)
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 ScopePie(
                     letter = "W",

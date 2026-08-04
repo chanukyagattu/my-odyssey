@@ -188,6 +188,37 @@ percentage moved. Attaching media never moves a number by itself.
 
 ---
 
+## 4b. Claiming past visits
+
+**The honest premise: a photo proves a camera was there, not that you were.**
+EXIF is user-writable and an AirDropped original keeps its coordinates intact,
+so any rule built on one file is forgeable by anyone with a friend who has been
+there. No inspection closes that gap. Two responses instead, and the second
+matters more.
+
+**Demand a pattern, not an artefact.** A claim needs at least three photos, all
+inside the geofence, spanning at least the place's dwell floor, taken from
+positions at least 25 m apart, and covering no more than a day. A real visit
+produces that without effort; assembling it from donated photos means obtaining
+someone's entire afternoon.
+
+**Refuse to let it count the same.** A claim earns `import_verified`, which the
+fold keeps out of the headline percentage and out of state completion entirely.
+`placesCredited` and `placesClaimed` are disjoint; verifying a place live later
+promotes it out of claimed, never double-counting. So a successful forgery
+inflates a number nobody is impressed by — which is what actually removes the
+incentive, since no evidence rule ever reaches certainty.
+
+One consequence worth stating: a claim's own photos must never promote it. The
+auto-upgrade in `attachMedia` is explicitly skipped for backfilled visits.
+
+**No photo-library permission.** Photos arrive through the system picker, which
+runs outside the app and hands over only what the user selects. The cost is
+PhotoKit's `sourceType` — the one signal that distinguishes a camera capture
+from a received file. Worth revisiting only if claim fraud turns out to matter.
+
+---
+
 ## 5. Evidence
 
 `self_reported < import_verified < photo_verified < gps_verified`. Only the top

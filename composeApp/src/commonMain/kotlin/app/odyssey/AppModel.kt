@@ -7,6 +7,7 @@ import app.odyssey.engine.Account
 import app.odyssey.engine.AccountStore
 import app.odyssey.engine.AppSnapshot
 import app.odyssey.engine.AuthResult
+import app.odyssey.engine.BACKFILL_MIN_PHOTOS
 import app.odyssey.engine.CanonEntry
 import app.odyssey.engine.CanonV1
 import app.odyssey.engine.Countries
@@ -284,6 +285,33 @@ class AppModel(
             back()
         }
     }
+
+    /**
+     * Claims a place visited before the app existed, from the staged photos.
+     *
+     * Deliberately a different action from [record]: it needs a set of photos
+     * rather than a fix, and what it earns is a claim rather than a
+     * verification. The UI never lets the two look interchangeable.
+     */
+    fun claimPast(entry: CanonEntry) {
+        val outcome = repo.claimPastVisit(entry.placeId, staged.map { it.bytes })
+        refresh()
+        toast = when (outcome) {
+            is OdysseyRepository.ClaimOutcome.Accepted ->
+                "Claimed ${entry.name} from ${outcome.photos} photos. It counts toward claimed, " +
+                    "not verified — capture it live to verify."
+
+            is OdysseyRepository.ClaimOutcome.Refused -> outcome.reason
+        }
+        if (outcome is OdysseyRepository.ClaimOutcome.Accepted) {
+            clearStaged()
+            capturing = null
+            back()
+        }
+    }
+
+    /** How many more photos a claim for [entry] still needs. */
+    fun photosStillNeeded(): Int = (BACKFILL_MIN_PHOTOS - staged.size).coerceAtLeast(0)
 
     fun revoke(eventId: String) {
         val r = repo.revokeVisit(eventId, "revoked by user")
