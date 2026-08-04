@@ -25,10 +25,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -321,6 +324,7 @@ fun ScopePie(
     onClick: () -> Unit,
 ) {
     val done = Palette.Verified
+    val doneFar = Palette.VerifiedFar
     val togo = Palette.Remaining
     val marker = Palette.Text
     val dim = if (selected) 1f else 0.38f
@@ -334,41 +338,15 @@ fun ScopePie(
                 .clickable { onClick() },
         ) {
             Canvas(modifier = Modifier.fillMaxSize().padding(3.dp)) {
-                val stroke = size.minDimension * 0.20f
-                // The track is thinner and quieter than the progress, so the
-                // eye lands on what has been done rather than what has not.
-                val trackStroke = stroke * 0.62f
-                val inset = stroke / 2
-                val arc = Size(size.width - stroke, size.height - stroke)
-                val topLeft = Offset(inset, inset)
-                val sweep = 360f * fraction.coerceIn(0f, 1f)
-
-                drawArc(
-                    color = togo.copy(alpha = dim),
-                    startAngle = -90f,
-                    sweepAngle = 360f,
-                    useCenter = false,
-                    topLeft = topLeft,
-                    size = arc,
-                    style = Stroke(width = trackStroke),
+                progressRing(
+                    fraction = fraction,
+                    track = togo,
+                    from = done,
+                    to = doneFar,
+                    marker = marker,
+                    strokeWidth = size.minDimension * 0.20f,
+                    alpha = dim,
                 )
-                if (sweep > 0f) {
-                    drawArc(
-                        color = done.copy(alpha = dim),
-                        startAngle = -90f,
-                        sweepAngle = sweep,
-                        useCenter = false,
-                        topLeft = topLeft,
-                        size = arc,
-                        style = Stroke(width = stroke, cap = StrokeCap.Round),
-                    )
-                    // "You started here", matching the app icon.
-                    drawCircle(
-                        color = marker.copy(alpha = dim),
-                        radius = stroke * 0.26f,
-                        center = Offset(size.width / 2, inset),
-                    )
-                }
             }
             Text(
                 letter,
