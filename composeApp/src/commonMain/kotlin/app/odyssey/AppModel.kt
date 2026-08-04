@@ -379,13 +379,21 @@ class AppModel(
             kind = MediaKind.PHOTO,
             near = location.fix ?: entry.centroid,
             atEpochSeconds = nowEpochSeconds(),
-        ) { bytes ->
-            if (bytes == null) {
-                toast = "No photo selected."
-            } else {
-                val item = StagedMedia(bytes, MediaKind.PHOTO, parseJpegExif(bytes))
-                staged = if (staged.any { it.mediaId == item.mediaId }) staged else staged + item
+        ) { picked ->
+            if (picked.isEmpty()) {
+                toast = "Nothing selected."
+                return@pick
             }
+            // Content addressing makes re-adding the same file a no-op rather
+            // than a duplicate row.
+            val existing = staged.map { it.mediaId }.toMutableSet()
+            val fresh = picked.mapNotNull { bytes ->
+                val item = StagedMedia(bytes, MediaKind.PHOTO, parseJpegExif(bytes))
+                if (existing.add(item.mediaId)) item else null
+            }
+            staged = staged + fresh
+            val skipped = picked.size - fresh.size
+            if (skipped > 0) toast = "$skipped already added."
         }
     }
 

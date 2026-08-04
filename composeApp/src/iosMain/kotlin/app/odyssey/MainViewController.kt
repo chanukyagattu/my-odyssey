@@ -13,10 +13,11 @@ import platform.UIKit.UIViewController
  * [USE_SIMULATED_LOCATION] drives the app from the in-app teleport controls
  * instead of CoreLocation — useful in the Simulator, where there is no GPS.
  *
- * Media comes from [SyntheticMediaSource]; the real photo-library picker lives
- * in `docs/IosPhotoPicker.kt.txt`, ready to drop into this source set.
+ * [USE_SYNTHETIC_MEDIA] swaps the system photo picker for fabricated JPEGs
+ * carrying real EXIF — useful in a simulator with an empty photo library.
  */
 private const val USE_SIMULATED_LOCATION = true
+private const val USE_SYNTHETIC_MEDIA = false
 
 fun MainViewController(): UIViewController {
     val location: LocationSource =
@@ -31,7 +32,7 @@ fun MainViewController(): UIViewController {
         // separate histories without separate files.
         repoFor = { username -> OdysseyRepository(userId = username) },
         location = location,
-        mediaSource = SyntheticMediaSource(),
+        mediaSource = if (USE_SYNTHETIC_MEDIA) SyntheticMediaSource() else IosPhotoPicker(),
         sharer = IosSharer(),
     )
 

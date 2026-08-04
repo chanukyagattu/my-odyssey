@@ -1,0 +1,229 @@
+place_id	country	region_code	region_name	name	city	postal_code	lat	lng	dwell_seconds	geofence_meters	tags
+ae-az-sheikhzayed	AE	AE-AZ	Abu Dhabi	Sheikh Zayed Grand Mosque	Abu Dhabi		24.4128	54.475	5400	2000	mosque
+ae-du-burjkhalifa	AE	AE-DU	Dubai	Burj Khalifa	Dubai		25.1972	55.2744	5400	2000	tower|icon
+ar-b-recoleta	AR	AR-B	Buenos Aires	Recoleta Cemetery	Buenos Aires		-34.5875	-58.3936	5400	2000	cemetery
+ar-z-perito	AR	AR-Z	Santa Cruz	Perito Moreno Glacier	El Calafate		-50.4967	-73.1377	9000	10000	glacier|unesco
+at-5-hallstatt	AT	AT-5	Salzburg	Hallstatt	Hallstatt		47.5622	13.6493	7200	3000	village|unesco
+at-9-schonbrunn	AT	AT-9	Vienna	Schönbrunn Palace	Vienna		48.1845	16.3122	7200	3000	palace|unesco
+au-nsw-operahouse	AU	AU-NSW	New South Wales	Sydney Opera House	Sydney		-33.8568	151.2153	5400	2000	landmark|unesco
+au-nt-uluru	AU	AU-NT	Northern Territory	Uluru	Yulara		-25.3444	131.0369	9000	15000	monolith|unesco
+au-qld-greatbarrier	AU	AU-QLD	Queensland	Great Barrier Reef	Cairns		-16.2864	145.7781	14400	50000	reef|unesco
+au-vic-greatocean	AU	AU-VIC	Victoria	Twelve Apostles	Port Campbell		-38.6662	143.1044	5400	5000	coast
+be-bru-grandplace	BE	BE-BRU	Brussels	Grand-Place	Brussels		50.8467	4.3525	3600	2000	square|unesco
+br-pr-iguacu	BR	BR-PR	Paraná	Iguaçu Falls	Foz do Iguaçu		-25.6953	-54.4367	10800	10000	falls|unesco
+br-rj-christ	BR	BR-RJ	Rio de Janeiro	Christ the Redeemer	Rio de Janeiro		-22.9519	-43.2105	5400	3000	statue|icon
+br-rj-sugarloaf	BR	BR-RJ	Rio de Janeiro	Sugarloaf Mountain	Rio de Janeiro		-22.9492	-43.1545	5400	3000	mountain
+ca-ab-banff	CA	CA-AB	Alberta	Banff National Park	Banff		51.4968	-115.9281	14400	30000	park|unesco
+ca-bc-stanley	CA	CA-BC	British Columbia	Stanley Park	Vancouver		49.3017	-123.1417	7200	5000	park
+ca-on-niagara	CA	CA-ON	Ontario	Niagara Falls	Niagara Falls		43.0896	-79.0849	5400	3000	falls
+ca-qc-oldquebec	CA	CA-QC	Quebec	Old Québec	Québec City		46.8123	-71.2145	7200	3000	district|unesco
+ch-be-jungfrau	CH	CH-BE	Bern	Jungfraujoch	Lauterbrunnen		46.5474	7.9808	9000	8000	mountain|unesco
+ch-vs-matterhorn	CH	CH-VS	Valais	Matterhorn	Zermatt		45.9763	7.6586	9000	10000	mountain|icon
+cl-an-atacama	CL	CL-AN	Antofagasta	Atacama Desert	San Pedro de Atacama		-22.9087	-68.1997	10800	30000	desert
+cl-vs-easter	CL	CL-VS	Valparaíso	Rapa Nui (Easter Island)	Hanga Roa		-27.1127	-109.3497	14400	15000	statues|unesco
+cn-bj-forbidden	CN	CN-BJ	Beijing	Forbidden City	Beijing		39.9163	116.3972	9000	2000	palace|unesco
+cn-bj-greatwall	CN	CN-BJ	Beijing	Great Wall at Mutianyu	Beijing		40.4319	116.5704	10800	6000	wall|unesco
+cn-hn-zhangjiajie	CN	CN-HN	Hunan	Zhangjiajie	Zhangjiajie		29.315	110.4344	14400	20000	landscape|unesco
+cn-sn-terracotta	CN	CN-SN	Shaanxi	Terracotta Army	Xi'an		34.3841	109.2785	7200	3000	ruins|unesco
+cz-pr-castle	CZ	CZ-PR	Prague	Prague Castle	Prague		50.091	14.4016	7200	2000	castle
+cz-pr-charlesbridge	CZ	CZ-PR	Prague	Charles Bridge	Prague		50.0865	14.4114	3600	2000	bridge
+de-be-brandenburg	DE	DE-BE	Berlin	Brandenburg Gate	Berlin		52.5163	13.3777	2700	2000	landmark
+de-be-museumisland	DE	DE-BE	Berlin	Museum Island	Berlin		52.5169	13.4019	7200	2000	museum|unesco
+de-by-neuschwanstein	DE	DE-BY	Bavaria	Neuschwanstein Castle	Schwangau		47.5576	10.7498	7200	3000	castle|icon
+eg-asn-abusimbel	EG	EG-ASN	Aswan	Abu Simbel	Abu Simbel		22.3372	31.6258	7200	3000	temple|unesco
+eg-gz-pyramids	EG	EG-GZ	Giza	Pyramids of Giza	Giza		29.9792	31.1342	9000	5000	ruins|unesco
+eg-lx-karnak	EG	EG-LX	Luxor	Karnak Temple	Luxor		25.7188	32.6573	7200	3000	temple|unesco
+es-an-alhambra	ES	ES-AN	Andalusia	Alhambra	Granada		37.1761	-3.5881	9000	3000	palace|unesco
+es-an-mezquita	ES	ES-AN	Andalusia	Mosque-Cathedral of Córdoba	Córdoba		37.879	-4.7794	5400	2000	church|unesco
+es-ct-parkguell	ES	ES-CT	Catalonia	Park Güell	Barcelona		41.4145	2.1527	5400	2000	park|unesco
+es-ct-sagrada	ES	ES-CT	Catalonia	Sagrada Família	Barcelona		41.4036	2.1744	5400	2000	church|icon
+es-md-prado	ES	ES-MD	Madrid	Museo del Prado	Madrid		40.4138	-3.6921	7200	2000	museum|art
+fr-idf-eiffel	FR	FR-IDF	Île-de-France	Eiffel Tower	Paris		48.8584	2.2945	3600	2000	landmark|icon
+fr-idf-louvre	FR	FR-IDF	Île-de-France	Louvre Museum	Paris		48.8606	2.3376	7200	2000	museum|art
+fr-idf-versailles	FR	FR-IDF	Île-de-France	Palace of Versailles	Versailles		48.8049	2.1204	7200	3000	palace|unesco
+fr-naq-lascaux	FR	FR-NAQ	Nouvelle-Aquitaine	Lascaux Caves	Montignac		45.0537	1.175	5400	3000	prehistoric|unesco
+fr-nor-montsaintmichel	FR	FR-NOR	Normandy	Mont-Saint-Michel	Le Mont-Saint-Michel		48.6361	-1.5115	7200	3000	abbey|unesco
+fr-pac-avignon	FR	FR-PAC	Provence-Alpes-Côte d'Azur	Palais des Papes	Avignon		43.9509	4.8076	5400	2000	palace|unesco
+gb-eng-britishmuseum	GB	GB-ENG	England	British Museum	London		51.5194	-0.127	7200	2000	museum
+gb-eng-stonehenge	GB	GB-ENG	England	Stonehenge	Amesbury		51.1789	-1.8262	3600	3000	prehistoric|unesco
+gb-eng-tower	GB	GB-ENG	England	Tower of London	London		51.5081	-0.0759	7200	2000	castle|unesco
+gb-nir-giants	GB	GB-NIR	Northern Ireland	Giant's Causeway	Bushmills		55.2408	-6.5116	5400	3000	natural|unesco
+gb-sct-edinburgh	GB	GB-SCT	Scotland	Edinburgh Castle	Edinburgh		55.9486	-3.1999	5400	2000	castle
+gb-sct-skye	GB	GB-SCT	Scotland	Isle of Skye	Portree		57.4125	-6.193	10800	25000	island|landscape
+gr-a1-acropolis	GR	GR-A1	Attica	Acropolis of Athens	Athens		37.9715	23.7267	7200	2000	ruins|unesco
+gr-k-meteora	GR	GR-K	Central Macedonia	Meteora	Kalambaka		39.7217	21.6306	9000	8000	monastery|unesco
+gr-l-santorini	GR	GR-L	South Aegean	Oia, Santorini	Oia		36.4618	25.3753	7200	3000	village|coast
+hr-13-plitvice	HR	HR-13	Lika-Senj	Plitvice Lakes	Plitvička Jezera		44.8654	15.582	10800	10000	lakes|unesco
+hr-19-dubrovnik	HR	HR-19	Dubrovnik-Neretva	Dubrovnik Old Town	Dubrovnik		42.6407	18.1077	7200	2000	walled city|unesco
+hu-bu-parliament	HU	HU-BU	Budapest	Hungarian Parliament	Budapest		47.5073	19.0458	5400	2000	landmark
+id-ba-tanahlot	ID	ID-BA	Bali	Tanah Lot	Tabanan		-8.6212	115.0868	5400	2000	temple|coast
+id-ji-bromo	ID	ID-JI	East Java	Mount Bromo	Probolinggo		-7.9425	112.953	9000	8000	volcano
+id-jt-borobudur	ID	ID-JT	Central Java	Borobudur	Magelang		-7.6079	110.2038	9000	3000	temple|unesco
+ie-l-trinity	IE	IE-L	Leinster	Book of Kells, Trinity College	Dublin		53.3444	-6.2567	3600	2000	library
+ie-m-cliffs	IE	IE-M	Munster	Cliffs of Moher	Liscannor		52.9719	-9.4265	5400	3000	cliffs|natural
+in-ga-oldgoa	IN	IN-GA	Goa	Churches of Old Goa	Old Goa		15.5007	73.9114	5400	3000	church|unesco
+in-kl-backwaters	IN	IN-KL	Kerala	Kerala Backwaters	Alappuzha		9.4981	76.3388	10800	15000	waterways
+in-mh-ajanta	IN	IN-MH	Maharashtra	Ajanta Caves	Aurangabad		20.5522	75.7033	9000	4000	caves|unesco
+in-rj-amber	IN	IN-RJ	Rajasthan	Amber Fort	Jaipur		26.9855	75.8513	7200	3000	fort|unesco
+in-rj-jaisalmer	IN	IN-RJ	Rajasthan	Jaisalmer Fort	Jaisalmer		26.9124	70.9124	7200	3000	fort|unesco
+in-up-tajmahal	IN	IN-UP	Uttar Pradesh	Taj Mahal	Agra		27.1751	78.0421	7200	3000	mausoleum|unesco
+in-up-varanasi	IN	IN-UP	Uttar Pradesh	Varanasi Ghats	Varanasi		25.3109	83.0104	7200	3000	river|sacred
+is-1-bluelagoon	IS	IS-1	Capital Region	Blue Lagoon	Grindavík		63.8804	-22.4495	7200	3000	geothermal
+is-8-jokulsarlon	IS	IS-8	Southern Region	Jökulsárlón	Höfn		64.0784	-16.2306	5400	5000	glacier|natural
+it-cam-amalfi	IT	IT-CAM	Campania	Amalfi Coast	Amalfi		40.634	14.6027	7200	15000	coast|unesco
+it-cam-pompeii	IT	IT-CAM	Campania	Pompeii	Pompei		40.7497	14.4869	9000	4000	ruins|unesco
+it-laz-colosseum	IT	IT-LAZ	Lazio	Colosseum	Rome		41.8902	12.4922	5400	2000	ruins|icon
+it-laz-vatican	IT	IT-LAZ	Lazio	St Peter's Basilica	Vatican City		41.9022	12.4539	5400	2000	church|icon
+it-tos-florence	IT	IT-TOS	Tuscany	Florence Cathedral	Florence		43.7731	11.256	5400	2000	church|unesco
+it-tos-pisa	IT	IT-TOS	Tuscany	Leaning Tower of Pisa	Pisa		43.723	10.3966	3600	2000	landmark|icon
+it-ven-stmarks	IT	IT-VEN	Veneto	St Mark's Square	Venice		45.4341	12.3388	5400	2000	square|unesco
+jo-aq-wadirum	JO	JO-AQ	Aqaba	Wadi Rum	Wadi Rum		29.5765	35.42	10800	20000	desert|unesco
+jo-ma-petra	JO	JO-MA	Ma'an	Petra	Wadi Musa		30.3285	35.4444	14400	8000	ruins|unesco
+jp-13-sensoji	JP	JP-13	Tokyo	Sensō-ji	Tokyo		35.7148	139.7967	3600	2000	temple
+jp-13-shibuya	JP	JP-13	Tokyo	Shibuya Crossing	Tokyo		35.6595	139.7005	1800	1000	urban|icon
+jp-22-fuji	JP	JP-22	Shizuoka	Mount Fuji	Fujinomiya		35.3606	138.7274	10800	15000	mountain|unesco
+jp-26-fushimi	JP	JP-26	Kyoto	Fushimi Inari Taisha	Kyoto		34.9671	135.7727	7200	2000	shrine|icon
+jp-26-kinkakuji	JP	JP-26	Kyoto	Kinkaku-ji	Kyoto		35.0394	135.7292	3600	2000	temple|unesco
+jp-34-itsukushima	JP	JP-34	Hiroshima	Itsukushima Shrine	Hatsukaichi		34.2959	132.3197	5400	2000	shrine|unesco
+jp-34-peacepark	JP	JP-34	Hiroshima	Hiroshima Peace Memorial	Hiroshima		34.3955	132.4536	5400	2000	memorial|unesco
+ke-30-masaimara	KE	KE-30	Narok	Maasai Mara	Sekenani		-1.4061	35.008	14400	40000	safari|wildlife
+kh-13-angkorwat	KH	KH-13	Siem Reap	Angkor Wat	Siem Reap		13.4125	103.867	14400	10000	temple|unesco
+kr-11-gyeongbokgung	KR	KR-11	Seoul	Gyeongbokgung Palace	Seoul		37.5796	126.977	7200	2000	palace
+kr-49-seongsan	KR	KR-49	Jeju	Seongsan Ilchulbong	Jeju		33.4586	126.9425	5400	3000	volcanic|unesco
+ma-01-chefchaouen	MA	MA-01	Tanger-Tetouan	Chefchaouen	Chefchaouen		35.1688	-5.2636	7200	3000	town
+ma-07-jemaa	MA	MA-07	Marrakesh-Safi	Jemaa el-Fnaa	Marrakesh		31.6258	-7.9891	5400	2000	square|unesco
+mx-cmx-teotihuacan	MX	MX-CMX	Mexico City	Teotihuacán	San Juan Teotihuacán		19.6925	-98.8438	9000	5000	ruins|unesco
+mx-roo-chichenitza	MX	MX-ROO	Quintana Roo	Chichén Itzá	Tinum		20.6843	-88.5678	9000	4000	ruins|unesco
+mx-roo-tulum	MX	MX-ROO	Quintana Roo	Tulum Ruins	Tulum		20.2149	-87.4291	5400	3000	ruins|coast
+nl-nh-annefrank	NL	NL-NH	North Holland	Anne Frank House	Amsterdam		52.3752	4.884	3600	2000	museum|history
+nl-nh-rijks	NL	NL-NH	North Holland	Rijksmuseum	Amsterdam		52.36	4.8852	7200	2000	museum|art
+no-03-vigeland	NO	NO-03	Oslo	Vigeland Park	Oslo		59.927	10.6996	5400	2000	park|art
+no-46-geiranger	NO	NO-46	Vestland	Geirangerfjord	Geiranger		62.101	7.006	9000	15000	fjord|unesco
+np-p1-everestbc	NP	NP-P1	Koshi	Everest Base Camp	Khumjung		28.0026	86.8528	14400	10000	trek|mountain
+np-p3-durbar	NP	NP-P3	Bagmati	Kathmandu Durbar Square	Kathmandu		27.7045	85.307	5400	2000	square|unesco
+nz-can-aoraki	NZ	NZ-CAN	Canterbury	Aoraki / Mount Cook	Mount Cook		-43.595	170.1418	10800	20000	mountain|unesco
+nz-ota-milford	NZ	NZ-OTA	Otago	Milford Sound	Milford Sound		-44.6714	167.9256	10800	15000	fjord|unesco
+nz-wko-hobbiton	NZ	NZ-WKO	Waikato	Hobbiton Movie Set	Matamata		-37.8721	175.6828	7200	3000	film
+pe-cus-machupicchu	PE	PE-CUS	Cusco	Machu Picchu	Aguas Calientes		-13.1631	-72.545	10800	5000	ruins|unesco
+pe-cus-rainbow	PE	PE-CUS	Cusco	Rainbow Mountain	Pitumarca		-13.869	-71.303	10800	8000	mountain
+pl-ma-auschwitz	PL	PL-MA	Lesser Poland	Auschwitz-Birkenau Memorial	Oświęcim		50.027	19.203	10800	4000	memorial|unesco
+pl-ma-wieliczka	PL	PL-MA	Lesser Poland	Wieliczka Salt Mine	Wieliczka		49.9831	20.0546	9000	3000	mine|unesco
+pt-11-belem	PT	PT-11	Lisbon	Belém Tower	Lisbon		38.6916	-9.216	3600	2000	tower|unesco
+pt-11-sintra	PT	PT-11	Lisbon	Pena Palace	Sintra		38.7876	-9.3907	7200	3000	palace|unesco
+pt-13-ribeira	PT	PT-13	Porto	Ribeira	Porto		41.1407	-8.613	5400	2000	district|unesco
+ru-mow-redsquare	RU	RU-MOW	Moscow	Red Square	Moscow		55.7539	37.6208	5400	2000	square|unesco
+ru-spe-hermitage	RU	RU-SPE	St Petersburg	State Hermitage Museum	St Petersburg		59.9398	30.3146	9000	2000	museum|art
+se-ab-vasa	SE	SE-AB	Stockholm	Vasa Museum	Stockholm		59.328	18.0915	5400	2000	museum
+th-10-grandpalace	TH	TH-10	Bangkok	Grand Palace	Bangkok		13.75	100.4913	7200	2000	palace
+th-10-watarun	TH	TH-10	Bangkok	Wat Arun	Bangkok		13.7437	100.4889	3600	2000	temple
+th-64-sukhothai	TH	TH-64	Sukhothai	Sukhothai Historical Park	Sukhothai		17.0206	99.7036	9000	5000	ruins|unesco
+th-83-phiphi	TH	TH-83	Phuket	Phi Phi Islands	Phuket		7.7407	98.7784	10800	10000	island|coast
+tr-20-pamukkale	TR	TR-20	Denizli	Pamukkale	Pamukkale		37.9203	29.1213	7200	4000	natural|unesco
+tr-34-hagiasophia	TR	TR-34	Istanbul	Hagia Sophia	Istanbul		41.0086	28.9802	5400	2000	church|unesco
+tr-50-cappadocia	TR	TR-50	Nevşehir	Cappadocia	Göreme		38.6431	34.8289	10800	15000	landscape|unesco
+tz-02-serengeti	TZ	TZ-02	Arusha	Serengeti National Park	Seronera		-2.3333	34.8333	14400	50000	safari|unesco
+tz-18-kilimanjaro	TZ	TZ-18	Kilimanjaro	Mount Kilimanjaro	Moshi		-3.0674	37.3556	14400	20000	mountain|unesco
+us-ak-denali	US	US-AK	Alaska	Denali National Park			63.1148	-151.1926	7200	25000	us-canon
+us-ak-glacier-bay	US	US-AK	Alaska	Glacier Bay National Park			58.6658	-136.9002	7200	25000	us-canon
+us-al-civil-rights	US	US-AL	Alabama	Birmingham Civil Rights Institute			33.5157	-86.8149	2700	800	us-canon
+us-al-uss-alabama	US	US-AL	Alabama	USS Alabama Battleship Park			30.6819	-88.0147	3600	1500	us-canon
+us-ar-crystal-bridges	US	US-AR	Arkansas	Crystal Bridges Museum			36.3808	-94.2043	3600	1200	us-canon
+us-ar-hot-springs	US	US-AR	Arkansas	Hot Springs National Park			34.5117	-93.0538	3600	6000	us-canon
+us-az-antelope-canyon	US	US-AZ	Arizona	Antelope Canyon			36.8619	-111.3743	2700	3000	us-canon
+us-az-grand-canyon	US	US-AZ	Arizona	Grand Canyon South Rim			36.0544	-112.1401	5400	12000	us-canon
+us-ca-golden-gate	US	US-CA	California	Golden Gate Bridge			37.8199	-122.4783	1800	2500	us-canon
+us-ca-yosemite	US	US-CA	California	Yosemite Valley			37.7456	-119.5936	7200	15000	us-canon
+us-co-mesa-verde	US	US-CO	Colorado	Mesa Verde National Park			37.2309	-108.4618	5400	15000	us-canon
+us-co-rocky-mountain	US	US-CO	Colorado	Rocky Mountain National Park			40.3428	-105.6836	7200	20000	us-canon
+us-ct-mystic-seaport	US	US-CT	Connecticut	Mystic Seaport Museum			41.3626	-71.9662	3600	1500	us-canon
+us-ct-yale-art	US	US-CT	Connecticut	Yale University Art Gallery			41.3083	-72.9315	2700	800	us-canon
+us-de-cape-henlopen	US	US-DE	Delaware	Cape Henlopen State Park			38.7862	-75.093	3600	5000	us-canon
+us-de-winterthur	US	US-DE	Delaware	Winterthur Museum & Garden			39.8043	-75.5985	3600	2500	us-canon
+us-fl-everglades	US	US-FL	Florida	Everglades National Park			25.2866	-80.8987	5400	25000	us-canon
+us-fl-kennedy-space	US	US-FL	Florida	Kennedy Space Center			28.5729	-80.649	5400	6000	us-canon
+us-ga-mlk-historic	US	US-GA	Georgia	MLK Jr. National Historical Park			33.7556	-84.3733	2700	1500	us-canon
+us-ga-savannah	US	US-GA	Georgia	Savannah Historic District			32.0782	-81.0912	5400	3000	us-canon
+us-hi-pearl-harbor	US	US-HI	Hawaii	Pearl Harbor Memorial			21.3649	-157.9399	3600	2500	us-canon
+us-hi-volcanoes	US	US-HI	Hawaii	Hawai'i Volcanoes National Park			19.4194	-155.2885	7200	20000	us-canon
+us-ia-effigy-mounds	US	US-IA	Iowa	Effigy Mounds National Monument			43.0908	-91.1868	3600	6000	us-canon
+us-ia-field-of-dreams	US	US-IA	Iowa	Field of Dreams			42.4711	-90.9268	2700	1500	us-canon
+us-id-craters-moon	US	US-ID	Idaho	Craters of the Moon			43.4167	-113.5167	3600	15000	us-canon
+us-id-sawtooth	US	US-ID	Idaho	Sawtooth National Rec. Area			44.16	-114.93	7200	25000	us-canon
+us-il-art-institute	US	US-IL	Illinois	Art Institute of Chicago			41.8796	-87.6237	5400	800	us-canon
+us-il-cloud-gate	US	US-IL	Illinois	Millennium Park & Cloud Gate			41.8826	-87.6226	1800	800	us-canon
+us-in-indiana-dunes	US	US-IN	Indiana	Indiana Dunes National Park			41.6533	-87.0524	3600	12000	us-canon
+us-in-motor-speedway	US	US-IN	Indiana	Indianapolis Motor Speedway			39.795	-86.2347	3600	3000	us-canon
+us-ks-nelson-atkins	US	US-KS	Kansas	Nelson-Atkins Museum			39.0451	-94.5807	3600	800	us-canon
+us-ks-tallgrass	US	US-KS	Kansas	Tallgrass Prairie Preserve			38.4322	-96.5583	3600	12000	us-canon
+us-ky-churchill-downs	US	US-KY	Kentucky	Churchill Downs			38.2027	-85.7708	3600	1500	us-canon
+us-ky-mammoth-cave	US	US-KY	Kentucky	Mammoth Cave National Park			37.1862	-86.1	5400	12000	us-canon
+us-la-french-quarter	US	US-LA	Louisiana	French Quarter			29.9584	-90.0644	5400	2000	us-canon
+us-la-oak-alley	US	US-LA	Louisiana	Oak Alley Plantation			30.0055	-90.8817	3600	1500	us-canon
+us-ma-cape-cod	US	US-MA	Massachusetts	Cape Cod National Seashore			41.925	-70.02	5400	15000	us-canon
+us-ma-freedom-trail	US	US-MA	Massachusetts	Boston Freedom Trail			42.3601	-71.0589	5400	3000	us-canon
+us-md-assateague	US	US-MD	Maryland	Assateague Island			38.2497	-75.1519	3600	10000	us-canon
+us-md-fort-mchenry	US	US-MD	Maryland	Fort McHenry			39.2639	-76.58	2700	1500	us-canon
+us-me-acadia	US	US-ME	Maine	Acadia National Park			44.3386	-68.2733	7200	15000	us-canon
+us-me-portland-head	US	US-ME	Maine	Portland Head Light			43.6231	-70.2078	1800	1200	us-canon
+us-mi-mackinac	US	US-MI	Michigan	Mackinac Island			45.8492	-84.6189	7200	5000	us-canon
+us-mi-pictured-rocks	US	US-MI	Michigan	Pictured Rocks Lakeshore			46.5522	-86.34	5400	20000	us-canon
+us-mn-boundary-waters	US	US-MN	Minnesota	Boundary Waters Canoe Area			47.95	-91.5	7200	30000	us-canon
+us-mn-split-rock	US	US-MN	Minnesota	Split Rock Lighthouse			47.2003	-91.3672	2700	2000	us-canon
+us-mo-gateway-arch	US	US-MO	Missouri	Gateway Arch			38.6247	-90.1848	2700	1200	us-canon
+us-mo-ozarks	US	US-MO	Missouri	Ozark National Scenic Riverways			37.1833	-91.25	5400	20000	us-canon
+us-ms-natchez-trace	US	US-MS	Mississippi	Natchez Trace Parkway			32.2988	-90.9084	3600	15000	us-canon
+us-ms-vicksburg	US	US-MS	Mississippi	Vicksburg National Military Park			32.3465	-90.8546	3600	6000	us-canon
+us-mt-glacier	US	US-MT	Montana	Glacier National Park			48.7596	-113.787	7200	25000	us-canon
+us-mt-little-bighorn	US	US-MT	Montana	Little Bighorn Battlefield			45.5703	-107.4292	2700	5000	us-canon
+us-nc-blue-ridge	US	US-NC	North Carolina	Blue Ridge Parkway			35.5951	-82.5515	5400	25000	us-canon
+us-nc-outer-banks	US	US-NC	North Carolina	Cape Hatteras Lighthouse			35.2508	-75.5288	2700	3000	us-canon
+us-nd-knife-river	US	US-ND	North Dakota	Knife River Indian Villages			47.3372	-101.3838	2700	5000	us-canon
+us-nd-theodore-roosevelt	US	US-ND	North Dakota	Theodore Roosevelt National Park			46.979	-103.5387	5400	20000	us-canon
+us-ne-chimney-rock	US	US-NE	Nebraska	Chimney Rock			41.7036	-103.3494	1800	3000	us-canon
+us-ne-henry-doorly	US	US-NE	Nebraska	Henry Doorly Zoo			41.2278	-95.9247	5400	1500	us-canon
+us-nh-franconia-notch	US	US-NH	New Hampshire	Franconia Notch			44.15	-71.6833	3600	8000	us-canon
+us-nh-mount-washington	US	US-NH	New Hampshire	Mount Washington			44.2705	-71.3033	5400	6000	us-canon
+us-nj-cape-may	US	US-NJ	New Jersey	Cape May Historic District			38.9351	-74.906	3600	2500	us-canon
+us-nj-liberty-park	US	US-NJ	New Jersey	Liberty State Park			40.705	-74.0553	2700	3000	us-canon
+us-nm-carlsbad	US	US-NM	New Mexico	Carlsbad Caverns			32.1479	-104.5567	5400	10000	us-canon
+us-nm-white-sands	US	US-NM	New Mexico	White Sands National Park			32.7791	-106.1717	3600	15000	us-canon
+us-nv-las-vegas-strip	US	US-NV	Nevada	Las Vegas Strip			36.1147	-115.1728	5400	3000	us-canon
+us-nv-valley-of-fire	US	US-NV	Nevada	Valley of Fire State Park			36.4816	-114.5253	3600	12000	us-canon
+us-ny-niagara-falls	US	US-NY	New York	Niagara Falls State Park			43.0828	-79.0742	3600	3000	us-canon
+us-ny-statue-liberty	US	US-NY	New York	Statue of Liberty			40.6892	-74.0445	3600	2000	us-canon
+us-oh-cuyahoga	US	US-OH	Ohio	Cuyahoga Valley National Park			41.2808	-81.5678	5400	15000	us-canon
+us-oh-rock-hall	US	US-OH	Ohio	Rock & Roll Hall of Fame			41.5085	-81.6954	3600	1200	us-canon
+us-ok-omm	US	US-OK	Oklahoma	Oklahoma City National Memorial			35.4728	-97.517	2700	1200	us-canon
+us-ok-wichita-mtns	US	US-OK	Oklahoma	Wichita Mountains Refuge			34.73	-98.7	3600	15000	us-canon
+us-or-columbia-gorge	US	US-OR	Oregon	Columbia River Gorge			45.5762	-122.1158	3600	20000	us-canon
+us-or-crater-lake	US	US-OR	Oregon	Crater Lake National Park			42.9446	-122.109	5400	15000	us-canon
+us-pa-gettysburg	US	US-PA	Pennsylvania	Gettysburg National Military Park			39.8117	-77.2311	5400	8000	us-canon
+us-pa-independence	US	US-PA	Pennsylvania	Independence Hall			39.9489	-75.15	2700	1200	us-canon
+us-ri-block-island	US	US-RI	Rhode Island	Block Island			41.1683	-71.5783	5400	6000	us-canon
+us-ri-the-breakers	US	US-RI	Rhode Island	The Breakers, Newport			41.4696	-71.2986	2700	1200	us-canon
+us-sc-charleston	US	US-SC	South Carolina	Charleston Historic District			32.7765	-79.9311	5400	3000	us-canon
+us-sc-fort-sumter	US	US-SC	South Carolina	Fort Sumter			32.7522	-79.8747	2700	1500	us-canon
+us-sd-badlands	US	US-SD	South Dakota	Badlands National Park			43.8554	-102.3397	5400	20000	us-canon
+us-sd-mount-rushmore	US	US-SD	South Dakota	Mount Rushmore			43.8791	-103.4591	2700	3000	us-canon
+us-tn-graceland	US	US-TN	Tennessee	Graceland			35.0478	-90.026	3600	1500	us-canon
+us-tn-great-smoky	US	US-TN	Tennessee	Great Smoky Mountains			35.6532	-83.507	7200	25000	us-canon
+us-tx-big-bend	US	US-TX	Texas	Big Bend National Park			29.2498	-103.2502	7200	30000	us-canon
+us-tx-the-alamo	US	US-TX	Texas	The Alamo			29.426	-98.4861	2700	1200	us-canon
+us-ut-arches	US	US-UT	Utah	Arches National Park			38.7331	-109.5925	5400	15000	us-canon
+us-ut-zion	US	US-UT	Utah	Zion National Park			37.2982	-113.0263	5400	15000	us-canon
+us-va-monticello	US	US-VA	Virginia	Monticello			38.0088	-78.4529	3600	2000	us-canon
+us-va-shenandoah	US	US-VA	Virginia	Shenandoah National Park			38.53	-78.35	5400	25000	us-canon
+us-vt-shelburne	US	US-VT	Vermont	Shelburne Museum			44.3714	-73.2262	3600	1500	us-canon
+us-vt-stowe	US	US-VT	Vermont	Stowe & Mount Mansfield			44.5438	-72.8143	5400	8000	us-canon
+us-wa-mount-rainier	US	US-WA	Washington	Mount Rainier National Park			46.8523	-121.7603	7200	20000	us-canon
+us-wa-pike-place	US	US-WA	Washington	Pike Place Market			47.6097	-122.3422	1800	800	us-canon
+us-wi-apostle-islands	US	US-WI	Wisconsin	Apostle Islands Lakeshore			46.96	-90.66	5400	20000	us-canon
+us-wi-taliesin	US	US-WI	Wisconsin	Taliesin			43.1409	-90.0698	3600	2000	us-canon
+us-wv-harpers-ferry	US	US-WV	West Virginia	Harpers Ferry			39.3256	-77.7386	3600	3000	us-canon
+us-wv-new-river-gorge	US	US-WV	West Virginia	New River Gorge National Park			37.9393	-81.0668	5400	15000	us-canon
+us-wy-grand-teton	US	US-WY	Wyoming	Grand Teton National Park			43.7904	-110.6818	7200	25000	us-canon
+us-wy-yellowstone	US	US-WY	Wyoming	Yellowstone National Park			44.428	-110.5885	7200	40000	us-canon
+vn-13-halong	VN	VN-13	Quảng Ninh	Ha Long Bay	Hạ Long		20.9101	107.1839	10800	20000	bay|unesco
+vn-49-hoian	VN	VN-49	Quảng Nam	Hội An Ancient Town	Hội An		15.8801	108.338	7200	2000	town|unesco
+za-mp-kruger	ZA	ZA-MP	Mpumalanga	Kruger National Park	Skukuza		-24.9948	31.59	14400	40000	safari|wildlife
+za-wc-tablemountain	ZA	ZA-WC	Western Cape	Table Mountain	Cape Town		-33.9628	18.4098	9000	6000	mountain|natural

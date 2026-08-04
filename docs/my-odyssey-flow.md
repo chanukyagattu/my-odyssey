@@ -212,10 +212,19 @@ incentive, since no evidence rule ever reaches certainty.
 One consequence worth stating: a claim's own photos must never promote it. The
 auto-upgrade in `attachMedia` is explicitly skipped for backfilled visits.
 
-**No photo-library permission.** Photos arrive through the system picker, which
-runs outside the app and hands over only what the user selects. The cost is
-PhotoKit's `sourceType` — the one signal that distinguishes a camera capture
-from a received file. Worth revisiting only if claim fraud turns out to matter.
+**No photo-library permission.** Photos arrive through `PHPickerViewController`,
+which runs *outside* the app's process and hands over only what the user
+selects. iOS requires no photo-library permission for it, which is why
+`NSPhotoLibraryUsageDescription` is absent from Info.plist — the app genuinely
+cannot read your library, rather than promising not to. The only photo key
+present is `NSPhotoLibraryAddUsageDescription`, for saving share cards.
+
+The cost is PhotoKit's `sourceType`, the one signal that separates a camera
+capture from a received file. A library *scan* would need full read access and
+would get that signal back; the manual claim path deliberately does not.
+
+The picker is multi-select. A claim needs at least three photos, and three
+separate trips through a single-select picker is a flow nobody finishes.
 
 ---
 
