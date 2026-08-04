@@ -159,8 +159,8 @@ class BackfillTest {
         )
         val r = fold(events, canon, user)
         assertEquals(2, r.placesClaimed.size)
-        assertFalse("UT" in r.statesComplete, "state completion is reserved for verified visits")
-        assertEquals(0.0, r.stateCoveragePct, 1e-9)
+        assertFalse("UT" in r.regionsComplete, "state completion is reserved for verified visits")
+        assertEquals(0.0, r.regionCoveragePct, 1e-9)
     }
 
     @Test

@@ -16,7 +16,7 @@ import kotlin.math.max
  * nobody can tell it is wrong by looking.
  *
  * [regionCode] is ISO 3166-2 shaped (`US-UT`, `FR-IDF`, `JP-26`), which
- * generalises past the US-only `usState` the app still uses today.
+ * generalises past the US-only `regionCode` the app still uses today.
  */
 data class CanonPlace(
     /** Primary key. Stable forever, never reused, encodes its country. */
@@ -149,13 +149,14 @@ class CanonDb(
         entries = places.map {
             CanonEntry(
                 placeId = it.placeId,
-                usState = it.regionCode,
+                regionCode = it.regionCode,
                 name = it.name,
                 lifecycle = it.lifecycle,
                 centroid = it.centroid,
                 minDwellSeconds = it.minDwellSeconds,
                 geofenceRadiusMeters = it.geofenceRadiusMeters,
                 country = it.country,
+                regionName = it.regionName,
             )
         },
     )

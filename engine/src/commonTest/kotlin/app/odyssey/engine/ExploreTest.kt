@@ -45,7 +45,7 @@ class ExploreTest {
         result = fold(events, canon, user),
         scope = scope,
         selectedCountry = "US",
-        selectedState = state,
+        selectedRegion = state,
         fix = fix,
     )
 
@@ -75,7 +75,7 @@ class ExploreTest {
         assertEquals(1, groups.size)
         assertEquals("Wyoming", groups[0].title)
         assertEquals(2, groups[0].items.size)
-        assertTrue(groups[0].items.all { it.entry.usState == "WY" })
+        assertTrue(groups[0].items.all { it.entry.regionCode == "WY" })
     }
 
     // ---------- the two tabs partition the canon ----------
@@ -91,7 +91,7 @@ class ExploreTest {
         assertEquals(1, utah.credited)
         assertFalse(utah.items.any { it.entry.placeId == "us-ut-zion" })
 
-        val repo = AppSnapshot(canon, events, fold(events, canon, user), Selection(usState = "UT"))
+        val repo = AppSnapshot(canon, events, fold(events, canon, user), Selection(regionCode = "UT"))
         val mem = memories(repo, Scope.STATE, "US", "UT")
         assertEquals(1, mem.size)
         assertEquals("us-ut-zion", mem[0].visit.placeId)
@@ -188,10 +188,10 @@ class ExploreTest {
         val events = creditedLedger("us-ut-zion")
         val utah = groupsFor(Scope.COUNTRY, events).first { it.key == "UT" }
         assertEquals(1, utah.items.size)
-        assertTrue(utah.items.single().completesState, "Arches now completes Utah")
+        assertTrue(utah.items.single().completesRegion, "Arches now completes Utah")
 
         val untouched = groupsFor(Scope.COUNTRY, events).first { it.key == "WY" }
-        assertTrue(untouched.items.none { it.completesState }, "two left means neither one finishes it")
+        assertTrue(untouched.items.none { it.completesRegion }, "two left means neither one finishes it")
     }
 
     @Test
@@ -199,7 +199,7 @@ class ExploreTest {
         // In P9 the filter is a single state; the annotation must still mean
         // "last one left", not "last one on this screen".
         val groups = groupsFor(Scope.STATE, state = "UT")
-        assertTrue(groups.single().items.none { it.completesState })
+        assertTrue(groups.single().items.none { it.completesRegion })
     }
 
     // ---------- scope filtering of Memories ----------

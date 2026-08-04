@@ -53,7 +53,7 @@ fun TimelineScreen(model: AppModel) {
                 when (scope) {
                     Scope.WORLD -> "World"
                     Scope.COUNTRY -> Countries.name(snap.selection.country)
-                    Scope.STATE -> app.odyssey.engine.CanonV1.stateName(snap.selection.usState)
+                    Scope.STATE -> snap.canon.regionName(snap.selection.regionCode)
                 },
                 when (scope) {
                     Scope.WORLD -> "P7 · every canon place, grouped by country"
@@ -62,7 +62,7 @@ fun TimelineScreen(model: AppModel) {
                 },
             )
 
-            val (stateDone, stateTotal) = snap.result.stateProgress(snap.selection.usState)
+            val (stateDone, stateTotal) = snap.result.regionProgress(snap.selection.regionCode)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -74,7 +74,7 @@ fun TimelineScreen(model: AppModel) {
                 ) { model.setScope(Scope.WORLD) }
                 ScopePie(
                     letter = "C",
-                    fraction = (snap.result.stateCoveragePct / 100.0).toFloat(),
+                    fraction = (snap.result.regionCoveragePct / 100.0).toFloat(),
                     selected = scope == Scope.COUNTRY,
                 ) { model.setScope(Scope.COUNTRY) }
                 ScopePie(
@@ -185,7 +185,7 @@ private fun MemoryCell(item: MemoryItem, modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Medium,
             maxLines = 2,
         )
-        Text(item.entry?.usState ?: "", fontSize = 10.sp, color = Palette.Muted)
+        Text(item.entry?.regionCode ?: "", fontSize = 10.sp, color = Palette.Muted)
         Text(formatDate(item.visit.startEpochSec), fontSize = 10.sp, color = Palette.Muted)
         Box(modifier = Modifier.height(6.dp))
         Pill(
@@ -283,7 +283,7 @@ private fun ExploreRow(item: ExploreItem) {
             Text(item.entry.name, fontSize = 14.sp, color = Palette.Text)
             Text(
                 buildString {
-                    append(item.entry.usState)
+                    append(item.entry.regionCode)
                     item.distanceMeters?.let { append(" · ${it.asDistance()}") }
                     append(" · ${item.entry.minDwellSeconds.asDuration()} dwell")
                 },
@@ -291,7 +291,7 @@ private fun ExploreRow(item: ExploreItem) {
                 color = Palette.Muted,
             )
         }
-        if (item.completesState) {
+        if (item.completesRegion) {
             Pill("completes state", Palette.Verified)
         }
     }

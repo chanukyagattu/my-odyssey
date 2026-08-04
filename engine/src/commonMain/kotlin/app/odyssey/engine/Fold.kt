@@ -8,11 +8,11 @@ data class FoldResult(
     val canonVersion: Int,
     val placesCredited: Set<String>,
     val placesDenominator: Int,
-    val statesComplete: Set<String>,
-    val frozenStates: Set<String>,
+    val regionsComplete: Set<String>,
+    val frozenRegions: Set<String>,
     /** state -> (credited, activeTotal) */
-    val statePartial: Map<String, Pair<Int, Int>>,
-    val stateDenominator: Int,
+    val regionPartial: Map<String, Pair<Int, Int>>,
+    val regionDenominator: Int,
     /** placeId -> the evidence level that earned the credit */
     val creditedEvidence: Map<String, Evidence>,
     /** placeId -> visits that exist but do not count (self-reported, or under the dwell floor) */
@@ -31,12 +31,12 @@ data class FoldResult(
     val claimedCoveragePct: Double
         get() = if (placesDenominator == 0) 0.0 else 100.0 * placesClaimed.size / placesDenominator
 
-    val stateCoveragePct: Double
-        get() = if (stateDenominator == 0) 0.0 else 100.0 * statesComplete.size / stateDenominator
+    val regionCoveragePct: Double
+        get() = if (regionDenominator == 0) 0.0 else 100.0 * regionsComplete.size / regionDenominator
 
     fun isClaimed(placeId: String): Boolean = placeId in placesClaimed
 
-    fun stateProgress(usState: String): Pair<Int, Int> = statePartial[usState] ?: (0 to 0)
+    fun regionProgress(regionCode: String): Pair<Int, Int> = regionPartial[regionCode] ?: (0 to 0)
 
     fun isCredited(placeId: String): Boolean = placeId in placesCredited
 }
@@ -97,10 +97,10 @@ fun fold(events: Collection<LedgerEvent>, canon: CanonRelease, userId: String): 
     // of state coverage so nothing completes for free.
     val inPlay = canon.entries
         .filter { it.lifecycle == Lifecycle.ACTIVE || it.lifecycle == Lifecycle.SUSPENDED }
-        .groupBy { it.usState }
+        .groupBy { it.regionCode }
     val frozen = inPlay.filterValues { es -> es.none { it.lifecycle == Lifecycle.ACTIVE } }.keys
 
-    val activeByState = denominator.groupBy { it.usState }
+    val activeByState = denominator.groupBy { it.regionCode }
     val partial = activeByState.mapValues { (_, es) ->
         Pair(es.count { it.placeId in credited }, es.size)
     }
@@ -110,10 +110,10 @@ fun fold(events: Collection<LedgerEvent>, canon: CanonRelease, userId: String): 
         canonVersion = canon.version,
         placesCredited = credited,
         placesDenominator = denominator.size,
-        statesComplete = complete,
-        frozenStates = frozen,
-        statePartial = partial,
-        stateDenominator = inPlay.size - frozen.size,
+        regionsComplete = complete,
+        frozenRegions = frozen,
+        regionPartial = partial,
+        regionDenominator = inPlay.size - frozen.size,
         creditedEvidence = creditedEvidence,
         uncreditedVisits = uncredited,
         placesClaimed = claimed.toSet(),

@@ -57,7 +57,7 @@ fun LedgerScreen(model: AppModel) {
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Pill("${snap.events.size} events", Palette.Muted)
                         Pill("${snap.result.placesCredited.size}/${snap.result.placesDenominator} places", Palette.Verified)
-                        Pill("${snap.result.statesComplete.size}/${snap.result.stateDenominator} states", Palette.Pending)
+                        Pill("${snap.result.regionsComplete.size}/${snap.result.regionDenominator} states", Palette.Pending)
                     }
                     Box(modifier = Modifier.height(12.dp))
                     Text(

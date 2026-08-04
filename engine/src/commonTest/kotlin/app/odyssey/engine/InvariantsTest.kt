@@ -157,15 +157,15 @@ class InvariantsTest {
             visit("e1", zion.placeId, 0),
             visit("e2", arches.placeId, 10),
         )
-        assertTrue("UT" in fold(l.events(), canon, user).statesComplete)
+        assertTrue("UT" in fold(l.events(), canon, user).regionsComplete)
 
         val bryce = CanonEntry(
             "p-ut-bryce", "UT", "Bryce Canyon", Lifecycle.ACTIVE, LatLng(37.5930, -112.1871), 3600,
         )
         val v2 = CanonRelease(2, canon.entries + bryce)
         val after = fold(l.events(), canon = v2, userId = user)
-        assertFalse("UT" in after.statesComplete)
-        assertEquals(2 to 3, after.stateProgress("UT"))
+        assertFalse("UT" in after.regionsComplete)
+        assertEquals(2 to 3, after.regionProgress("UT"))
     }
 
     // ---------- 4. corrections are compensating events only ----------
@@ -195,13 +195,13 @@ class InvariantsTest {
         val l = ledgerOf(visit("e1", zion.placeId, 0))
         val before = fold(l.events(), canon, user)
         assertEquals(4, before.placesDenominator)
-        assertEquals(1 to 2, before.stateProgress("UT"))
+        assertEquals(1 to 2, before.regionProgress("UT"))
 
         val suspended = canon.withLifecycle(setOf(arches.placeId), Lifecycle.SUSPENDED)
         val during = fold(l.events(), suspended, user)
         assertEquals(3, during.placesDenominator)
-        assertEquals(1 to 1, during.stateProgress("UT"))
-        assertTrue("UT" in during.statesComplete, "Utah completes while Arches is closed")
+        assertEquals(1 to 1, during.regionProgress("UT"))
+        assertTrue("UT" in during.regionsComplete, "Utah completes while Arches is closed")
 
         val reactivated = suspended.withLifecycle(setOf(arches.placeId), Lifecycle.ACTIVE)
         val after = fold(l.events(), reactivated, user)
@@ -215,10 +215,10 @@ class InvariantsTest {
         val l = ledgerOf(visit("e1", zion.placeId, 0), visit("e2", arches.placeId, 10))
         val r = fold(l.events(), frozenNy, user)
 
-        assertEquals(setOf("NY"), r.frozenStates)
-        assertEquals(1, r.stateDenominator)
-        assertFalse("NY" in r.statesComplete)
-        assertEquals(100.0, r.stateCoveragePct, EPS) // UT alone is 100% of the states in play
+        assertEquals(setOf("NY"), r.frozenRegions)
+        assertEquals(1, r.regionDenominator)
+        assertFalse("NY" in r.regionsComplete)
+        assertEquals(100.0, r.regionCoveragePct, EPS) // UT alone is 100% of the states in play
     }
 
     // ---------- 6. plausibility at the door ----------
@@ -356,10 +356,10 @@ class InvariantsTest {
         val r = CanonV1.release
         assertEquals(100, r.entries.size)
         assertEquals(100, r.entries.map { it.placeId }.toSet().size)
-        assertEquals(50, r.statesInPlay().size)
-        r.entries.groupBy { it.usState }.forEach { (state, entries) ->
+        assertEquals(50, r.regionsInPlay().size)
+        r.entries.groupBy { it.regionCode }.forEach { (state, entries) ->
             assertEquals(2, entries.size, "$state should have exactly 2 canon places")
-            assertTrue(CanonV1.stateName(state) != state, "$state has no display name")
+            assertTrue(CanonV1.regionName(state) != state, "$state has no display name")
         }
         r.entries.forEach {
             assertTrue(it.centroid.lat in 18.0..72.0, "${it.placeId} latitude out of range")
@@ -372,8 +372,8 @@ class InvariantsTest {
     fun anEmptyLedgerIsZeroPercentNotACrash() {
         val r = fold(emptyList(), CanonV1.release, user)
         assertEquals(0.0, r.placesCoveragePct, EPS)
-        assertEquals(0.0, r.stateCoveragePct, EPS)
+        assertEquals(0.0, r.regionCoveragePct, EPS)
         assertEquals(100, r.placesDenominator)
-        assertEquals(50, r.stateDenominator)
+        assertEquals(50, r.regionDenominator)
     }
 }

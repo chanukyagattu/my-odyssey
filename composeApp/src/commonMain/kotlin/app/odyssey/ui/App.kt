@@ -88,7 +88,7 @@ fun OdysseyApp(model: AppModel) {
 
                     Route.STATE_PICKER -> {
                         OdysseyBar(onBack = { model.back() }, leadingLabel = "Choose state")
-                        Body { StatePickerScreen(model) }
+                        Body { RegionPickerScreen(model) }
                     }
 
                     Route.FEED -> {

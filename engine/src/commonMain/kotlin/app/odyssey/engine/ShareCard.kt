@@ -56,7 +56,7 @@ fun shareCardFor(
 ): ShareCard {
     val r = snapshot.result
     val handle = username?.let { "@$it" } ?: "my odyssey"
-    val canonLine = "canon v${r.canonVersion} · ${r.placesDenominator} places · ${r.stateDenominator} states"
+    val canonLine = "canon v${r.canonVersion} · ${r.placesDenominator} places · ${r.regionDenominator} states"
 
     return when (scope) {
         Scope.WORLD -> ShareCard(
@@ -65,7 +65,7 @@ fun shareCardFor(
             fraction = (r.placesCoveragePct / 100.0).toFloat(),
             scopeLabel = "THE WORLD",
             stats = listOf(
-                CardStat("${r.statesComplete.size}/${r.stateDenominator}", "states complete"),
+                CardStat("${r.regionsComplete.size}/${r.regionDenominator}", "states complete"),
                 CardStat("1/${Countries.TOTAL_IN_WORLD}", "countries in canon"),
             ),
             verifiedLine = "Every visit GPS-verified",
@@ -76,25 +76,25 @@ fun shareCardFor(
         )
 
         Scope.COUNTRY -> ShareCard(
-            bigValue = pct(r.stateCoveragePct),
-            countLine = "${r.statesComplete.size} / ${r.stateDenominator} states complete",
-            fraction = (r.stateCoveragePct / 100.0).toFloat(),
+            bigValue = pct(r.regionCoveragePct),
+            countLine = "${r.regionsComplete.size} / ${r.regionDenominator} states complete",
+            fraction = (r.regionCoveragePct / 100.0).toFloat(),
             scopeLabel = "UNITED STATES",
             stats = listOf(
-                CardStat("${r.statesComplete.size}/${r.stateDenominator}", "states complete"),
+                CardStat("${r.regionsComplete.size}/${r.regionDenominator}", "states complete"),
                 CardStat("${r.placesCredited.size}/${r.placesDenominator}", "places verified"),
             ),
             verifiedLine = "No self-reported visits counted",
             canonLine = canonLine,
             handle = handle,
-            caption = "I'm ${pct(r.stateCoveragePct)} through the United States — " +
-                "${r.statesComplete.size}/${r.stateDenominator} states complete, all GPS-verified. #MyOdyssey",
+            caption = "I'm ${pct(r.regionCoveragePct)} through the United States — " +
+                "${r.regionsComplete.size}/${r.regionDenominator} states complete, all GPS-verified. #MyOdyssey",
         )
 
         Scope.STATE -> {
             // Note the state is NOT named. Naming it turns a score into a
             // location, and the card is public forever.
-            val (done, total) = r.stateProgress(snapshot.selection.usState)
+            val (done, total) = r.regionProgress(snapshot.selection.regionCode)
             val statePct = if (total == 0) 0.0 else 100.0 * done / total
             ShareCard(
                 bigValue = pct(statePct),
@@ -102,7 +102,7 @@ fun shareCardFor(
                 fraction = if (total == 0) 0f else done.toFloat() / total,
                 scopeLabel = "ONE STATE DOWN",
                 stats = listOf(
-                    CardStat("${r.statesComplete.size}/${r.stateDenominator}", "states complete"),
+                    CardStat("${r.regionsComplete.size}/${r.regionDenominator}", "states complete"),
                     CardStat("${r.placesCredited.size}/${r.placesDenominator}", "places verified"),
                 ),
                 verifiedLine = if (done == total && total > 0) {
@@ -113,7 +113,7 @@ fun shareCardFor(
                 canonLine = canonLine,
                 handle = handle,
                 caption = "$done of $total must-go places verified. " +
-                    "${r.statesComplete.size}/${r.stateDenominator} states complete. #MyOdyssey",
+                    "${r.regionsComplete.size}/${r.regionDenominator} states complete. #MyOdyssey",
             )
         }
     }

@@ -279,6 +279,6 @@ class SegmentationTest {
         val r = fold(events, canon, "u1")
         assertEquals(setOf(zion.placeId), r.placesCredited)
         assertEquals(setOf(arches.placeId), r.placesClaimed)
-        assertFalse("UT" in r.statesComplete, "a claim cannot finish the state on its own")
+        assertFalse("UT" in r.regionsComplete, "a claim cannot finish the state on its own")
     }
 }

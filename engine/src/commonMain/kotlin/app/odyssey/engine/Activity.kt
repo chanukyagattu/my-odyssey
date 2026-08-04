@@ -50,7 +50,7 @@ fun activityFeed(snapshot: AppSnapshot): List<ActivityEntry> {
     }
 
     fun where(entry: CanonEntry?): String =
-        entry?.let { "${it.name} · ${CanonV1.stateName(it.usState)}" } ?: "an unknown place"
+        entry?.let { "${it.name} · ${snapshot.canon.regionName(it.regionCode)}" } ?: "an unknown place"
 
     return events.mapIndexed { index, event ->
         when (event) {
@@ -65,7 +65,7 @@ fun activityFeed(snapshot: AppSnapshot): List<ActivityEntry> {
                     } else {
                         "Recorded ${entry?.name ?: event.placeId}"
                     },
-                    detail = "${CanonV1.stateName(entry?.usState ?: "")} · " +
+                    detail = "${snapshot.canon.regionName(entry?.regionCode ?: "")} · " +
                         "${event.dwellSeconds / 60} min · ${snapshot.effectiveEvidence(event).label}" +
                         if (counts) "" else " · does not count",
                     dateLabel = formatDate(event.startEpochSec),

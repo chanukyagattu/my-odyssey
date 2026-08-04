@@ -32,8 +32,8 @@ import app.odyssey.engine.Scope
 fun HomeScreen(model: AppModel) {
     val snap = model.snapshot
     val r = snap.result
-    val stateCode = snap.selection.usState
-    val (stateDone, stateTotal) = r.stateProgress(stateCode)
+    val stateCode = snap.selection.regionCode
+    val (stateDone, stateTotal) = r.regionProgress(stateCode)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -64,10 +64,10 @@ fun HomeScreen(model: AppModel) {
             ) {
                 TrackerDial(
                     diameter = 132,
-                    value = "${r.statesComplete.size}/${r.stateDenominator}",
+                    value = "${r.regionsComplete.size}/${r.regionDenominator}",
                     detail = "states",
                     scopeLabel = Countries.name(snap.selection.country),
-                    fraction = (r.stateCoveragePct / 100.0).toFloat(),
+                    fraction = (r.regionCoveragePct / 100.0).toFloat(),
                     accent = Palette.Verified,
                     onClick = { model.openTracker(Scope.COUNTRY) },
                     onShare = { model.shareCard(Scope.COUNTRY) },
@@ -77,9 +77,9 @@ fun HomeScreen(model: AppModel) {
                     diameter = 132,
                     value = "$stateDone/$stateTotal",
                     detail = "places",
-                    scopeLabel = model.stateName,
+                    scopeLabel = model.regionName,
                     fraction = if (stateTotal == 0) 0f else stateDone.toFloat() / stateTotal,
-                    accent = if (stateCode in r.statesComplete) Palette.Verified else Palette.Pending,
+                    accent = if (stateCode in r.regionsComplete) Palette.Verified else Palette.Pending,
                     onClick = { model.openTracker(Scope.STATE) },
                     onShare = { model.shareCard(Scope.STATE) },
                     onScope = { model.go(Route.STATE_PICKER) },

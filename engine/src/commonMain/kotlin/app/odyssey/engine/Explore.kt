@@ -22,7 +22,7 @@ data class ExploreItem(
     val entry: CanonEntry,
     val distanceMeters: Double?,
     /** True when this is the last uncredited ACTIVE place in its state. */
-    val completesState: Boolean,
+    val completesRegion: Boolean,
 )
 
 data class ExploreGroup(
@@ -60,17 +60,17 @@ object Countries {
  * accident.
  */
 private fun groupKey(entry: CanonEntry, scope: Scope): String =
-    if (scope == Scope.WORLD) entry.country else entry.usState
+    if (scope == Scope.WORLD) entry.country else entry.regionCode
 
-private fun groupTitle(entry: CanonEntry, scope: Scope): String =
-    if (scope == Scope.WORLD) Countries.name(entry.country) else CanonV1.stateName(entry.usState)
+private fun groupTitle(entry: CanonEntry, scope: Scope, canon: CanonRelease): String =
+    if (scope == Scope.WORLD) Countries.name(entry.country) else canon.regionName(entry.regionCode)
 
 fun exploreGroups(
     canon: CanonRelease,
     result: FoldResult,
     scope: Scope,
     selectedCountry: String,
-    selectedState: String,
+    selectedRegion: String,
     fix: LatLng?,
 ): List<ExploreGroup> {
     val active = canon.active()
@@ -78,14 +78,14 @@ fun exploreGroups(
     val scoped = when (scope) {
         Scope.WORLD -> active
         Scope.COUNTRY -> active.filter { it.country == selectedCountry }
-        Scope.STATE -> active.filter { it.usState == selectedState }
+        Scope.STATE -> active.filter { it.regionCode == selectedRegion }
     }
 
     // A place is "last in its state" against the whole canon, not the current
     // filter — otherwise P9 would claim every remaining place completes a state.
     val remainingPerState: Map<String, Int> = active
         .filter { it.placeId !in result.placesCredited }
-        .groupingBy { it.usState }
+        .groupingBy { it.regionCode }
         .eachCount()
 
     val groups = scoped.groupBy { groupKey(it, scope) }.map { (key, entriesInGroup) ->
@@ -94,7 +94,7 @@ fun exploreGroups(
             ExploreItem(
                 entry = entry,
                 distanceMeters = fix?.let { haversineMeters(it, entry.centroid) },
-                completesState = remainingPerState[entry.usState] == 1,
+                completesRegion = remainingPerState[entry.regionCode] == 1,
             )
         }
         val ordered = if (fix != null) {
@@ -104,7 +104,7 @@ fun exploreGroups(
         }
         ExploreGroup(
             key = key,
-            title = groupTitle(entriesInGroup.first(), scope),
+            title = groupTitle(entriesInGroup.first(), scope, canon),
             remaining = remaining.size,
             total = entriesInGroup.size,
             items = ordered,
@@ -135,7 +135,7 @@ fun memories(
     snapshot: AppSnapshot,
     scope: Scope,
     selectedCountry: String,
-    selectedState: String,
+    selectedRegion: String,
 ): List<MemoryItem> {
     val revoked = snapshot.events.filterIsInstance<VisitRevoked>().map { it.refEventId }.toSet()
     return snapshot.visits
@@ -145,7 +145,7 @@ fun memories(
             val inScope = when (scope) {
                 Scope.WORLD -> true
                 Scope.COUNTRY -> entry?.country == selectedCountry
-                Scope.STATE -> entry?.usState == selectedState
+                Scope.STATE -> entry?.regionCode == selectedRegion
             }
             if (!inScope) {
                 null

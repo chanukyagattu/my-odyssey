@@ -178,7 +178,7 @@ class CanonDbTest {
         assertEquals(db.places.size, release.entries.size)
         val taj = assertNotNull(release.byId["in-up-tajmahal"])
         assertEquals("IN", taj.country)
-        assertEquals("IN-UP", taj.usState, "region rides in the field the fold still calls usState")
+        assertEquals("IN-UP", taj.regionCode, "region rides in the field the fold still calls regionCode")
         assertEquals(db["in-up-tajmahal"]!!.geofenceRadiusMeters, taj.geofenceRadiusMeters)
     }
 
@@ -187,6 +187,6 @@ class CanonDbTest {
         val r = fold(emptyList(), CanonWorld.release, "u1")
         assertEquals(228, r.placesDenominator)
         assertEquals(0.0, r.placesCoveragePct, 1e-9)
-        assertTrue(r.stateDenominator >= 150, "every region is in play")
+        assertTrue(r.regionDenominator >= 150, "every region is in play")
     }
 }

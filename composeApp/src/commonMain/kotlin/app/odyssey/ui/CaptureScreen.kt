@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.odyssey.AppModel
 import app.odyssey.engine.CanonEntry
-import app.odyssey.engine.CanonV1
 import app.odyssey.engine.BACKFILL_MIN_PHOTOS
 import app.odyssey.engine.Evidence
 import app.odyssey.engine.LatLng
@@ -63,7 +62,7 @@ fun CaptureScreen(model: AppModel, entry: CanonEntry, modifier: Modifier = Modif
             Column {
                 Text(entry.name, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Palette.Text)
                 Text(
-                    "${CanonV1.stateName(entry.usState)} · ${entry.placeId}",
+                    "${model.snapshot.canon.regionName(entry.regionCode)} · ${entry.placeId}",
                     fontSize = 12.sp,
                     color = Palette.Muted,
                 )

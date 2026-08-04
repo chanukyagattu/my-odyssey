@@ -25,16 +25,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.odyssey.AppModel
-import app.odyssey.engine.CanonV1
 import app.odyssey.engine.CountryCatalog
 
 /**
  * Picking a country.
  *
- * All 195 are listed even though canon v1 covers one. Showing only the United
- * States would let the app pretend the world is one country wide; showing the
- * rest, greyed, makes the scope of the canon visible and gives the roadmap
- * somewhere to land.
+ * All 195 are listed, not just the ones the canon covers. Showing only covered
+ * countries would let the app pretend the world is exactly as large as its own
+ * dataset; showing the rest, greyed, makes the canon's scope visible and gives
+ * the roadmap somewhere to land.
  */
 @Composable
 fun CountryPickerScreen(model: AppModel) {
@@ -85,10 +84,10 @@ fun CountryPickerScreen(model: AppModel) {
 
 /** Picking a state within the selected country. */
 @Composable
-fun StatePickerScreen(model: AppModel) {
+fun RegionPickerScreen(model: AppModel) {
     val snap = model.snapshot
-    val states = snap.canon.statesInPlay()
-    val selected = snap.selection.usState
+    val states = snap.canon.regionsIn(snap.selection.country)
+    val selected = snap.selection.regionCode
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -103,9 +102,9 @@ fun StatePickerScreen(model: AppModel) {
         }
 
         items(states) { code ->
-            val (done, total) = snap.result.stateProgress(code)
+            val (done, total) = snap.result.regionProgress(code)
             PickerRow(
-                title = CanonV1.stateName(code),
+                title = snap.canon.regionName(code),
                 trailing = "$done/$total",
                 selected = code == selected,
                 enabled = true,
@@ -114,7 +113,7 @@ fun StatePickerScreen(model: AppModel) {
                     done > 0 -> Palette.Pending
                     else -> Palette.Muted
                 },
-            ) { model.selectStateAndReturn(code) }
+            ) { model.selectRegionAndReturn(code) }
         }
     }
 }

@@ -9,7 +9,6 @@ import app.odyssey.engine.AppSnapshot
 import app.odyssey.engine.AuthResult
 import app.odyssey.engine.BACKFILL_MIN_PHOTOS
 import app.odyssey.engine.CanonEntry
-import app.odyssey.engine.CanonV1
 import app.odyssey.engine.Countries
 import app.odyssey.engine.Evidence
 import app.odyssey.engine.ExifData
@@ -193,8 +192,8 @@ class AppModel(
 
     // ---------- selection (P3 owns it) ----------
 
-    fun selectState(usState: String) {
-        snapshot = repo.selectState(usState)
+    fun selectRegion(regionCode: String) {
+        snapshot = repo.selectRegion(regionCode)
     }
 
     /** Changes scope without navigating — the W/C/S pills on P7 / P8 / P9. */
@@ -208,8 +207,8 @@ class AppModel(
         back()
     }
 
-    fun selectStateAndReturn(code: String) {
-        snapshot = repo.selectState(code)
+    fun selectRegionAndReturn(code: String) {
+        snapshot = repo.selectRegion(code)
         back()
     }
 
@@ -225,7 +224,7 @@ class AppModel(
 
     val scope: Scope get() = snapshot.selection.scope
 
-    val stateName: String get() = CanonV1.stateName(snapshot.selection.usState)
+    val regionName: String get() = snapshot.canon.regionName(snapshot.selection.regionCode)
 
     val countryName: String get() = Countries.name(snapshot.selection.country)
 
@@ -358,7 +357,7 @@ class AppModel(
         result = snapshot.result,
         scope = snapshot.selection.scope,
         selectedCountry = snapshot.selection.country,
-        selectedState = snapshot.selection.usState,
+        selectedRegion = snapshot.selection.regionCode,
         fix = location.fix,
     )
 
@@ -366,7 +365,7 @@ class AppModel(
         snapshot = snapshot,
         scope = snapshot.selection.scope,
         selectedCountry = snapshot.selection.country,
-        selectedState = snapshot.selection.usState,
+        selectedRegion = snapshot.selection.regionCode,
     )
 
     // ---------- media ----------

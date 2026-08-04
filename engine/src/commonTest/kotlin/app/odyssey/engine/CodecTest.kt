@@ -76,6 +76,6 @@ class CodecTest {
         reloaded.restore(Codec.decodeAll(Codec.encodeAll(original.events())))
 
         assertEquals(fold(original.events(), canon, "u1"), fold(reloaded.events(), canon, "u1"))
-        assertTrue("UT" in fold(reloaded.events(), canon, "u1").statesComplete)
+        assertTrue("UT" in fold(reloaded.events(), canon, "u1").regionsComplete)
     }
 }

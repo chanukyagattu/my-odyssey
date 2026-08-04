@@ -13,7 +13,7 @@ class ActivityTest {
     private val t0 = 1_785_628_800L
 
     private fun snap(events: List<LedgerEvent>) =
-        AppSnapshot(canon, events, fold(events, canon, user), Selection(usState = "UT"))
+        AppSnapshot(canon, events, fold(events, canon, user), Selection(regionCode = "UT"))
 
     private fun visit(id: String = "v1", dwellBonus: Long = 600, evidence: Evidence = Evidence.GPS_VERIFIED) =
         VisitRecorded(id, user, zion.placeId, t0, t0 + zion.minDwellSeconds + dwellBonus, evidence)

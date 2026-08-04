@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.sp
 import app.odyssey.AppModel
 import app.odyssey.Route
 import app.odyssey.engine.CanonEntry
-import app.odyssey.engine.CanonV1
 import app.odyssey.engine.Countries
 import app.odyssey.engine.Lifecycle
 import app.odyssey.engine.Scope
@@ -43,8 +42,8 @@ import app.odyssey.engine.Scope
 fun TrackerDetailScreen(model: AppModel, scope: Scope) {
     val snap = model.snapshot
     val r = snap.result
-    val stateCode = snap.selection.usState
-    val (stateDone, stateTotal) = r.stateProgress(stateCode)
+    val stateCode = snap.selection.regionCode
+    val (stateDone, stateTotal) = r.regionProgress(stateCode)
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -68,10 +67,10 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
 
                     Scope.COUNTRY -> TrackerDial(
                         diameter = 230,
-                        value = "${r.statesComplete.size}/${r.stateDenominator}",
+                        value = "${r.regionsComplete.size}/${r.regionDenominator}",
                         detail = "states",
                         scopeLabel = Countries.name(snap.selection.country),
-                        fraction = (r.stateCoveragePct / 100.0).toFloat(),
+                        fraction = (r.regionCoveragePct / 100.0).toFloat(),
                         accent = Palette.Verified,
                         onShare = { model.shareCard(Scope.COUNTRY) },
                         onScope = { model.go(Route.COUNTRY_PICKER) },
@@ -81,9 +80,9 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
                         diameter = 230,
                         value = "$stateDone/$stateTotal",
                         detail = "places",
-                        scopeLabel = model.stateName,
+                        scopeLabel = model.regionName,
                         fraction = if (stateTotal == 0) 0f else stateDone.toFloat() / stateTotal,
-                        accent = if (stateCode in r.statesComplete) Palette.Verified else Palette.Pending,
+                        accent = if (stateCode in r.regionsComplete) Palette.Verified else Palette.Pending,
                         onShare = { model.shareCard(Scope.STATE) },
                         onScope = { model.go(Route.STATE_PICKER) },
                     )
@@ -102,8 +101,8 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
                         Scope.STATE -> "Places"
                     },
                     when (scope) {
-                        Scope.WORLD -> "canon v1 covers one"
-                        Scope.COUNTRY -> "tap to open a state"
+                        Scope.WORLD -> "${snap.canon.countriesInPlay().size} in the canon · tap to open"
+                        Scope.COUNTRY -> "tap to open a region"
                         Scope.STATE -> "tap to capture"
                     },
                 )
@@ -112,54 +111,68 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
 
         when (scope) {
             Scope.WORLD -> {
-                item {
+                items(snap.canon.countriesInPlay()) { code ->
+                    val inCountry = snap.canon.active().filter { it.country == code }
+                    val done = inCountry.count { it.placeId in r.placesCredited }
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        Card {
+                        Card(onClick = {
+                            model.selectCountry(code)
+                            model.openTracker(Scope.COUNTRY)
+                        }) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                 ) {
-                                    Text("United States", fontSize = 16.sp, fontWeight = FontWeight.Medium, color = Palette.Text)
                                     Text(
-                                        "${r.placesCredited.size}/${r.placesDenominator} places",
+                                        Countries.name(code),
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Medium,
+                                        color = Palette.Text,
+                                    )
+                                    Text(
+                                        "$done/${inCountry.size} places",
                                         fontSize = 12.sp,
-                                        color = Palette.Muted,
+                                        color = if (done > 0) Palette.Verified else Palette.Muted,
                                     )
                                 }
                                 Box(modifier = Modifier.height(10.dp))
                                 MiniBar(
-                                    fraction = (r.placesCoveragePct / 100.0).toFloat(),
+                                    fraction = if (inCountry.isEmpty()) 0f else done.toFloat() / inCountry.size,
                                     accent = Palette.Verified,
                                     modifier = Modifier.fillMaxWidth(),
-                                )
-                                Box(modifier = Modifier.height(12.dp))
-                                Text(
-                                    "${Countries.TOTAL_IN_WORLD - 1} more countries arrive with future " +
-                                        "canon releases. They are in no denominator today, so they " +
-                                        "cannot quietly dilute your percentage.",
-                                    fontSize = 12.sp,
-                                    color = Palette.Muted,
                                 )
                             }
                         }
                     }
                 }
+
+                item {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            "${Countries.TOTAL_IN_WORLD - snap.canon.countriesInPlay().size} more " +
+                                "countries arrive with future canon releases. They are in no " +
+                                "denominator today, so they cannot quietly dilute your percentage.",
+                            fontSize = 12.sp,
+                            color = Palette.Muted,
+                        )
+                    }
+                }
             }
 
             Scope.COUNTRY -> {
-                items(snap.canon.statesInPlay()) { code ->
-                    val (done, total) = r.stateProgress(code)
+                items(snap.canon.regionsIn(snap.selection.country)) { code ->
+                    val (done, total) = r.regionProgress(code)
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         StateRow(
                             code = code,
                             done = done,
                             total = total,
-                            complete = code in r.statesComplete,
-                            frozen = code in r.frozenStates,
+                            complete = code in r.regionsComplete,
+                            frozen = code in r.frozenRegions,
                             selected = code == stateCode,
                         ) {
-                            model.selectState(code)
+                            model.selectRegion(code)
                             model.openTracker(Scope.STATE)
                         }
                     }
@@ -167,7 +180,7 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
             }
 
             Scope.STATE -> {
-                items(snap.entriesInSelectedState()) { entry ->
+                items(snap.entriesInSelectedRegion()) { entry ->
                     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                         PlaceRow(model, entry)
                     }
@@ -219,7 +232,7 @@ private fun StateRow(
     ) {
         Text(code, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Palette.Text, modifier = Modifier.width(34.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(CanonV1.stateName(code), fontSize = 14.sp, color = Palette.Text)
+            Text(snap.canon.regionName(code), fontSize = 14.sp, color = Palette.Text)
             Box(modifier = Modifier.height(6.dp))
             MiniBar(
                 fraction = if (total == 0) 0f else done.toFloat() / total,

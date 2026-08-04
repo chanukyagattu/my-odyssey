@@ -29,7 +29,7 @@ class ShareCardTest {
             t += 30L * 86_400
             e
         }
-        return AppSnapshot(canon, events, fold(events, canon, user), Selection(usState = state))
+        return AppSnapshot(canon, events, fold(events, canon, user), Selection(regionCode = state))
     }
 
     // ---------- privacy ----------
@@ -52,7 +52,7 @@ class ShareCardTest {
         val snap = snapshotWith("us-ut-zion", "us-ut-arches")
         for (scope in Scope.entries) {
             val text = shareCardFor(snap, scope, user).allText.joinToString(" ")
-            for ((code, name) in CanonV1.stateNames) {
+            for ((code, name) in CanonV1.regionNames) {
                 assertFalse(text.contains(name), "card leaked state name '$name' at $scope")
                 assertFalse(text.contains(" $code "), "card leaked state code '$code' at $scope")
             }

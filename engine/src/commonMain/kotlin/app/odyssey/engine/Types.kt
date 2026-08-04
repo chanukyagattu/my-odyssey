@@ -70,7 +70,8 @@ fun haversineMeters(a: LatLng, b: LatLng): Double {
  */
 data class CanonEntry(
     val placeId: String,
-    val usState: String,
+    /** ISO 3166-2 shaped: `US-UT`, `FR-IDF`, `JP-26`. */
+    val regionCode: String,
     val name: String,
     val lifecycle: Lifecycle,
     val centroid: LatLng,
@@ -82,6 +83,8 @@ data class CanonEntry(
      * schema change.
      */
     val country: String = "US",
+    /** Display name for [regionCode]: "Utah", "Île-de-France", "Kyoto". */
+    val regionName: String = "",
 )
 
 /**
@@ -103,6 +106,28 @@ data class CanonRelease(
 
     fun active(): List<CanonEntry> = entries.filter { it.lifecycle == Lifecycle.ACTIVE }
 
+    /**
+     * Region names come from the canon in hand, not from a global lookup —
+     * a US-only table cannot name Île-de-France, and the fold has to work for
+     * whichever release it was handed.
+     */
+    private val regionNames: Map<String, String> =
+        entries.filter { it.regionName.isNotEmpty() }.associate { it.regionCode to it.regionName }
+
+    fun regionName(code: String): String = regionNames[code] ?: code
+
+    /**
+     * Regions belonging to one country. Now that the canon spans 46 of them,
+     * an unfiltered region list would show French régions under the United
+     * States.
+     */
+    fun regionsIn(country: String): List<String> = entries
+        .filter { it.country == country }
+        .filter { it.lifecycle == Lifecycle.ACTIVE || it.lifecycle == Lifecycle.SUSPENDED }
+        .map { it.regionCode }
+        .distinct()
+        .sorted()
+
     fun countriesInPlay(): List<String> = entries
         .filter { it.lifecycle == Lifecycle.ACTIVE || it.lifecycle == Lifecycle.SUSPENDED }
         .map { it.country }
@@ -110,14 +135,14 @@ data class CanonRelease(
         .sorted()
 
     /** States that are part of the game: at least one ACTIVE or SUSPENDED entry. */
-    fun statesInPlay(): List<String> = entries
+    fun regionsInPlay(): List<String> = entries
         .filter { it.lifecycle == Lifecycle.ACTIVE || it.lifecycle == Lifecycle.SUSPENDED }
-        .map { it.usState }
+        .map { it.regionCode }
         .distinct()
         .sorted()
 
-    fun entriesInState(usState: String): List<CanonEntry> = entries
-        .filter { it.usState == usState }
+    fun entriesInRegion(regionCode: String): List<CanonEntry> = entries
+        .filter { it.regionCode == regionCode }
         .filter { it.lifecycle != Lifecycle.RETIRED }
         .sortedBy { it.name }
 

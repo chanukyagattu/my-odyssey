@@ -130,6 +130,30 @@ under the hamburger as "Your activity".
 
 ---
 
+## 3a. The canon
+
+228 places across 46 countries and 153 regions, in `data/canon-world.tsv` with
+`CanonWorld.kt` generated from it. `CanonDb` indexes it by primary key, country
+and region, plus a one-degree spatial grid — `containing(point)` runs once per
+geotagged asset during a library scan, so it is the only hot path in the app.
+
+`regionCode` is ISO 3166-2 shaped (`US-UT`, `FR-IDF`, `JP-26`) rather than a
+bare US state. Region *names* resolve from the canon in hand, not a global
+table: a US-only lookup cannot name Île-de-France, and the fold has to work for
+whichever release it was handed.
+
+The United States keeps exactly two places per state because region completion
+is a mechanic worth preserving. Other countries carry between two and seven,
+weighted by what is worth seeing rather than a uniform count.
+
+`CanonV1` — the original US-only release — is deliberately retained. A release
+is an immutable snapshot, and the whole model rests on re-folding an old ledger
+against the release it was written under. It also serves as the fixture most of
+the test suite folds against, which is healthier than coupling tests to whatever
+the shipping canon happens to contain this month.
+
+---
+
 ## 4. Canon lifecycle
 
 `proposed → active ↔ suspended → retired`. A new release is a full immutable

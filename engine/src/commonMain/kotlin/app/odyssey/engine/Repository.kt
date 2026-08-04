@@ -6,7 +6,7 @@ enum class Scope { WORLD, COUNTRY, STATE }
 data class Selection(
     val scope: Scope = Scope.COUNTRY,
     val country: String = "US",
-    val usState: String = "UT",
+    val regionCode: String = "US-UT",
 )
 
 /** One immutable picture of the whole app, recomputed after every append. */
@@ -18,7 +18,7 @@ data class AppSnapshot(
 ) {
     val visits: List<VisitRecorded> get() = events.filterIsInstance<VisitRecorded>()
 
-    fun entriesInSelectedState(): List<CanonEntry> = canon.entriesInState(selection.usState)
+    fun entriesInSelectedRegion(): List<CanonEntry> = canon.entriesInRegion(selection.regionCode)
 
     fun visitsFor(placeId: String): List<VisitRecorded> {
         val revoked = events.filterIsInstance<VisitRevoked>().map { it.refEventId }.toSet()
@@ -62,7 +62,7 @@ class OdysseyRepository(
     private val media: MediaStore = MediaStore(),
     val userId: String = "local-user",
     val deviceId: String = "device-local",
-    initialCanon: CanonRelease = CanonV1.release,
+    initialCanon: CanonRelease = CanonWorld.release,
 ) {
     private val ledger = InMemoryLedger()
     private var canon: CanonRelease = initialCanon
@@ -75,10 +75,10 @@ class OdysseyRepository(
             ledger.restore(restored)
             seq = restored.filterIsInstance<VisitRecorded>().mapNotNull { it.sourceSeq }.maxOrNull() ?: 0
         }
-        val savedState = store.read(SELECTION_KEY)
+        val country = store.read(COUNTRY_KEY) ?: "US"
         selection = Selection(
-            country = store.read(COUNTRY_KEY) ?: "US",
-            usState = savedState ?: defaultState(),
+            country = country,
+            regionCode = store.read(SELECTION_KEY) ?: defaultRegion(country),
         )
     }
 
@@ -96,9 +96,9 @@ class OdysseyRepository(
         return snapshot()
     }
 
-    fun selectState(usState: String): AppSnapshot {
-        selection = selection.copy(usState = usState, scope = Scope.STATE)
-        store.write(SELECTION_KEY, usState)
+    fun selectRegion(regionCode: String): AppSnapshot {
+        selection = selection.copy(regionCode = regionCode, scope = Scope.STATE)
+        store.write(SELECTION_KEY, regionCode)
         return snapshot()
     }
 
@@ -109,12 +109,12 @@ class OdysseyRepository(
     fun selectCountry(code: String): AppSnapshot {
         val statesThere = canon.entries
             .filter { it.country == code && it.lifecycle != Lifecycle.RETIRED }
-            .map { it.usState }
+            .map { it.regionCode }
             .distinct()
             .sorted()
         selection = selection.copy(
             country = code,
-            usState = statesThere.firstOrNull() ?: selection.usState,
+            regionCode = statesThere.firstOrNull() ?: selection.regionCode,
         )
         store.write(COUNTRY_KEY, code)
         statesThere.firstOrNull()?.let { store.write(SELECTION_KEY, it) }
@@ -129,10 +129,19 @@ class OdysseyRepository(
      * Deliberately derived rather than remembered, so a fresh install and a
      * restored install agree.
      */
-    fun defaultState(): String {
+    fun defaultRegion(country: String = selection.country): String {
         val latest = ledger.events().filterIsInstance<VisitRecorded>().maxByOrNull { it.startEpochSec }
-        val fromHistory = latest?.let { canon.byId[it.placeId]?.usState }
-        return fromHistory ?: canon.statesInPlay().minOrNull() ?: "AL"
+        val fromHistory = latest?.let { canon.byId[it.placeId]?.regionCode }
+        if (fromHistory != null) return fromHistory
+
+        // Alphabetical fallback, but *within the selected country*. Taking the
+        // global minimum would open a US user on Abu Dhabi now that the canon
+        // spans 46 countries.
+        val here = canon.entries
+            .filter { it.country == country && it.lifecycle != Lifecycle.RETIRED }
+            .map { it.regionCode }
+            .minOrNull()
+        return here ?: canon.regionsInPlay().minOrNull() ?: "US-AL"
     }
 
     // ---------- writes ----------
