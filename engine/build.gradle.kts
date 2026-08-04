@@ -8,7 +8,6 @@ kotlin {
     jvm()
     iosArm64()
     iosSimulatorArm64()
-    iosX64()
 
     sourceSets {
         val commonTest by getting {

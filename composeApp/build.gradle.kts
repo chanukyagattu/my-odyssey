@@ -7,10 +7,11 @@ plugins {
 kotlin {
     jvmToolchain(17)
 
+    // No iosX64: Compose Multiplatform 1.11 dropped the Intel simulator, and
+    // every Mac that can run this is arm64 anyway.
     listOf(
         iosArm64(),
         iosSimulatorArm64(),
-        iosX64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
