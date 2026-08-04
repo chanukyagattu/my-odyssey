@@ -212,15 +212,22 @@ class AppModel(
         back()
     }
 
+    // The country-scoped numbers live on AppSnapshot so the dials, the pies,
+    // the picker and the share card cannot disagree with each other. These are
+    // pass-throughs, kept so the screens read as UI code.
+
+    fun regionsCompleteHere(): Int = snapshot.regionsHereComplete
+
+    fun regionsInCountry(): Int = snapshot.regionsHereTotal
+
+    /** "states", "prefectures", "regions" - whatever they are called there. */
+    fun regionNoun(): String = snapshot.regionNoun
+
+    /** How much of this country's subdivisions the canon reaches at all. */
+    fun regionsCoveredByCanon(): Int = snapshot.regionsHereInCanon.size
+
     /** Countries with at least one verified place. The world dial's numerator. */
-    fun countriesVisited(): Int {
-        val credited = snapshot.result.placesCredited
-        return snapshot.canon.entries
-            .filter { it.placeId in credited }
-            .map { it.country }
-            .distinct()
-            .size
-    }
+    fun countriesVisited(): Int = snapshot.countriesVisited
 
     val scope: Scope get() = snapshot.selection.scope
 

@@ -96,8 +96,9 @@ fun RegionPickerScreen(model: AppModel) {
     ) {
         item {
             ScreenHeader(
-                "State",
-                "${states.size} in play across ${CountryCatalog.name(snap.selection.country)}.",
+                model.regionNoun().replaceFirstChar { it.uppercase() },
+                "${states.size} of ${model.regionsInCountry()} ${model.regionNoun()} in " +
+                    "${CountryCatalog.name(snap.selection.country)} are in the canon.",
             )
         }
 

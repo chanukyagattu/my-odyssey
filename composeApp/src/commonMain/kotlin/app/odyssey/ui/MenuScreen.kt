@@ -135,7 +135,7 @@ fun MenuScreen(model: AppModel) {
                 Text(
                     "My Odyssey · canon v${model.snapshot.result.canonVersion} · " +
                         "${model.snapshot.result.placesDenominator} places across " +
-                        "${model.snapshot.result.regionDenominator} states",
+                        "${model.snapshot.canon.countriesInPlay().size} countries",
                     fontSize = 11.sp,
                     color = Palette.Muted,
                 )

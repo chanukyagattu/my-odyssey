@@ -20,6 +20,46 @@ data class AppSnapshot(
 
     fun entriesInSelectedRegion(): List<CanonEntry> = canon.entriesInRegion(selection.regionCode)
 
+    // ---------- the selected country, counted against its real size ----------
+    //
+    // FoldResult's region numbers are global: with 46 countries in the canon,
+    // regionDenominator is 153, which is nobody's country. Every country-scoped
+    // reading goes through here instead, so the dial, the pies, the picker and
+    // the share card cannot drift apart.
+
+    /** Regions of the selected country that the canon reaches at all. */
+    val regionsHereInCanon: List<String> get() = canon.regionsIn(selection.country)
+
+    val regionsHereComplete: Int
+        get() {
+            val here = regionsHereInCanon.toSet()
+            return result.regionsComplete.count { it in here }
+        }
+
+    /**
+     * The denominator is the country's *actual* subdivision count, not the
+     * canon's coverage of it. Brazil has 27 states whether or not we list
+     * places in all of them, and a dial that read 2/2 for Brazil would be
+     * claiming a completed country on the strength of two cities.
+     */
+    val regionsHereTotal: Int get() = Subdivisions.total(selection.country, regionsHereInCanon.size)
+
+    /** "states", "prefectures", "régions", "cantons". */
+    val regionNoun: String get() = Subdivisions.plural(selection.country)
+
+    val regionNounSingular: String get() = Subdivisions.singular(selection.country)
+
+    val regionCoverageHerePct: Double
+        get() = if (regionsHereTotal == 0) 0.0 else 100.0 * regionsHereComplete / regionsHereTotal
+
+    /** Countries with at least one credited place — the world dial's numerator. */
+    val countriesVisited: Int
+        get() = canon.entries
+            .filter { it.placeId in result.placesCredited }
+            .map { it.country }
+            .distinct()
+            .size
+
     fun visitsFor(placeId: String): List<VisitRecorded> {
         val revoked = events.filterIsInstance<VisitRevoked>().map { it.refEventId }.toSet()
         return visits.filter { it.placeId == placeId && it.eventId !in revoked }

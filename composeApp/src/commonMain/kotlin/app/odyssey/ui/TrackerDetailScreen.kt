@@ -65,12 +65,18 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
                         onShare = { model.shareCard(Scope.WORLD) },
                     )
 
+                    // Counted against the country's real subdivision count, not
+                    // the world's 153 and not the canon's own coverage.
                     Scope.COUNTRY -> TrackerDial(
                         diameter = 230,
-                        value = "${r.regionsComplete.size}/${r.regionDenominator}",
-                        detail = "states",
+                        value = "${model.regionsCompleteHere()}/${model.regionsInCountry()}",
+                        detail = model.regionNoun(),
                         scopeLabel = Countries.name(snap.selection.country),
-                        fraction = (r.regionCoveragePct / 100.0).toFloat(),
+                        fraction = if (model.regionsInCountry() == 0) {
+                            0f
+                        } else {
+                            model.regionsCompleteHere().toFloat() / model.regionsInCountry()
+                        },
                         accent = Palette.Verified,
                         onShare = { model.shareCard(Scope.COUNTRY) },
                         onScope = { model.go(Route.COUNTRY_PICKER) },
@@ -97,12 +103,13 @@ fun TrackerDetailScreen(model: AppModel, scope: Scope) {
                 SectionTitle(
                     when (scope) {
                         Scope.WORLD -> "Countries"
-                        Scope.COUNTRY -> "States"
+                        Scope.COUNTRY -> model.regionNoun().replaceFirstChar { it.uppercase() }
                         Scope.STATE -> "Places"
                     },
                     when (scope) {
                         Scope.WORLD -> "${snap.canon.countriesInPlay().size} in the canon · tap to open"
-                        Scope.COUNTRY -> "tap to open a region"
+                        Scope.COUNTRY ->
+                            "${model.regionsCoveredByCanon()} of ${model.regionsInCountry()} in the canon · tap to open"
                         Scope.STATE -> "tap to capture"
                     },
                 )

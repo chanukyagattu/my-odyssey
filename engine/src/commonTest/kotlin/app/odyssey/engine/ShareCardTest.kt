@@ -105,8 +105,8 @@ class ShareCardTest {
         val card = shareCardFor(snap, Scope.WORLD, user)
         assertEquals("2%", card.bigValue)
         assertEquals("2 / 100 must-go places verified", card.countLine)
-        assertTrue(card.stats.any { it.value == "0/50" && it.label == "states complete" })
-        assertTrue(card.stats.any { it.value == "1/195" && it.label == "countries in canon" })
+        assertTrue(card.stats.any { it.value == "0" && it.label == "regions complete" })
+        assertTrue(card.stats.any { it.value == "1/195" && it.label == "countries visited" })
     }
 
     @Test
@@ -116,6 +116,51 @@ class ShareCardTest {
         assertEquals("2%", card.bigValue, "1 of 50 states complete")
         assertEquals("1 / 50 states complete", card.countLine)
         assertTrue(card.stats.any { it.value == "1/50" })
+        assertEquals("UNITED STATES", card.scopeLabel)
+    }
+
+    /**
+     * The bug this guards: the country dial used the fold's global region
+     * count, so Brazil read "0/153" — the number of regions in the entire
+     * canon. A country is measured against its own subdivisions.
+     */
+    @Test
+    fun aCountryIsMeasuredAgainstItsOwnSubdivisions() {
+        val world = CanonWorld.release
+        val empty = fold(emptyList(), world, user)
+        for ((country, expected) in listOf("BR" to 27, "JP" to 47, "FR" to 18, "IN" to 36, "US" to 50)) {
+            val snap = AppSnapshot(
+                world,
+                emptyList(),
+                empty,
+                Selection(country = country, regionCode = world.regionsIn(country).first()),
+            )
+            assertEquals(expected, snap.regionsHereTotal, "$country denominator")
+            assertTrue(
+                shareCardFor(snap, Scope.COUNTRY, user).countLine.contains("/ $expected"),
+                "$country card used the wrong denominator",
+            )
+        }
+    }
+
+    @Test
+    fun theSubdivisionIsCalledWhateverItIsCalledThere() {
+        val world = CanonWorld.release
+        fun cardFor(country: String) = shareCardFor(
+            AppSnapshot(
+                world,
+                emptyList(),
+                fold(emptyList(), world, user),
+                Selection(country = country, regionCode = world.regionsIn(country).first()),
+            ),
+            Scope.COUNTRY,
+            user,
+        )
+        assertTrue(cardFor("JP").countLine.contains("prefectures"), "Japan has prefectures, not states")
+        assertTrue(cardFor("CH").countLine.contains("cantons"))
+        assertTrue(cardFor("PL").countLine.contains("voivodeships"))
+        assertTrue(cardFor("CA").countLine.contains("provinces and territories"))
+        assertTrue(cardFor("US").countLine.contains("states"))
     }
 
     @Test

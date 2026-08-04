@@ -56,7 +56,15 @@ fun shareCardFor(
 ): ShareCard {
     val r = snapshot.result
     val handle = username?.let { "@$it" } ?: "my odyssey"
-    val canonLine = "canon v${r.canonVersion} · ${r.placesDenominator} places · ${r.regionDenominator} states"
+    val canonCountries = snapshot.canon.countriesInPlay().size
+    val canonLine = "canon v${r.canonVersion} · ${r.placesDenominator} places · " +
+        "$canonCountries ${if (canonCountries == 1) "country" else "countries"}"
+
+    // Country-scoped numbers, read once. The fold's own region counts span the
+    // whole canon and are not the right denominator for any single country.
+    val hereDone = snapshot.regionsHereComplete
+    val hereTotal = snapshot.regionsHereTotal
+    val noun = snapshot.regionNoun
 
     return when (scope) {
         Scope.WORLD -> ShareCard(
@@ -65,8 +73,8 @@ fun shareCardFor(
             fraction = (r.placesCoveragePct / 100.0).toFloat(),
             scopeLabel = "THE WORLD",
             stats = listOf(
-                CardStat("${r.regionsComplete.size}/${r.regionDenominator}", "states complete"),
-                CardStat("1/${Countries.TOTAL_IN_WORLD}", "countries in canon"),
+                CardStat("${snapshot.countriesVisited}/${Countries.TOTAL_IN_WORLD}", "countries visited"),
+                CardStat("${r.regionsComplete.size}", "regions complete"),
             ),
             verifiedLine = "Every visit GPS-verified",
             canonLine = canonLine,
@@ -76,19 +84,20 @@ fun shareCardFor(
         )
 
         Scope.COUNTRY -> ShareCard(
-            bigValue = pct(r.regionCoveragePct),
-            countLine = "${r.regionsComplete.size} / ${r.regionDenominator} states complete",
-            fraction = (r.regionCoveragePct / 100.0).toFloat(),
-            scopeLabel = "UNITED STATES",
+            bigValue = pct(snapshot.regionCoverageHerePct),
+            countLine = "$hereDone / $hereTotal $noun complete",
+            fraction = (snapshot.regionCoverageHerePct / 100.0).toFloat(),
+            scopeLabel = Countries.name(snapshot.selection.country).uppercase(),
             stats = listOf(
-                CardStat("${r.regionsComplete.size}/${r.regionDenominator}", "states complete"),
+                CardStat("$hereDone/$hereTotal", "$noun complete"),
                 CardStat("${r.placesCredited.size}/${r.placesDenominator}", "places verified"),
             ),
             verifiedLine = "No self-reported visits counted",
             canonLine = canonLine,
             handle = handle,
-            caption = "I'm ${pct(r.regionCoveragePct)} through the United States — " +
-                "${r.regionsComplete.size}/${r.regionDenominator} states complete, all GPS-verified. #MyOdyssey",
+            caption = "I'm ${pct(snapshot.regionCoverageHerePct)} through " +
+                "${Countries.name(snapshot.selection.country)} — " +
+                "$hereDone/$hereTotal $noun complete, all GPS-verified. #MyOdyssey",
         )
 
         Scope.STATE -> {
@@ -100,20 +109,23 @@ fun shareCardFor(
                 bigValue = pct(statePct),
                 countLine = "$done / $total must-go places verified",
                 fraction = if (total == 0) 0f else done.toFloat() / total,
-                scopeLabel = "ONE STATE DOWN",
+                // The noun, never the name: "ONE PREFECTURE DOWN" reads right in
+                // Japan without saying which prefecture.
+                scopeLabel = "ONE ${snapshot.regionNounSingular.uppercase()} DOWN",
                 stats = listOf(
-                    CardStat("${r.regionsComplete.size}/${r.regionDenominator}", "states complete"),
+                    CardStat("$hereDone/$hereTotal", "$noun complete"),
                     CardStat("${r.placesCredited.size}/${r.placesDenominator}", "places verified"),
                 ),
                 verifiedLine = if (done == total && total > 0) {
-                    "State complete — every place GPS-verified"
+                    "${snapshot.regionNounSingular.replaceFirstChar { it.uppercase() }} complete — " +
+                        "every place GPS-verified"
                 } else {
                     "Every visit GPS-verified"
                 },
                 canonLine = canonLine,
                 handle = handle,
                 caption = "$done of $total must-go places verified. " +
-                    "${r.regionsComplete.size}/${r.regionDenominator} states complete. #MyOdyssey",
+                    "$hereDone/$hereTotal $noun complete. #MyOdyssey",
             )
         }
     }

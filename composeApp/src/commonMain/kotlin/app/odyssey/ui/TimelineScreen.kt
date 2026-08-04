@@ -74,7 +74,7 @@ fun TimelineScreen(model: AppModel) {
                 ) { model.setScope(Scope.WORLD) }
                 ScopePie(
                     letter = "C",
-                    fraction = (snap.result.regionCoveragePct / 100.0).toFloat(),
+                    fraction = (snap.regionCoverageHerePct / 100.0).toFloat(),
                     selected = scope == Scope.COUNTRY,
                 ) { model.setScope(Scope.COUNTRY) }
                 ScopePie(

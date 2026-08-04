@@ -64,10 +64,10 @@ fun HomeScreen(model: AppModel) {
             ) {
                 TrackerDial(
                     diameter = 132,
-                    value = "${r.regionsComplete.size}/${r.regionDenominator}",
-                    detail = "states",
+                    value = "${snap.regionsHereComplete}/${snap.regionsHereTotal}",
+                    detail = snap.regionNoun,
                     scopeLabel = Countries.name(snap.selection.country),
-                    fraction = (r.regionCoveragePct / 100.0).toFloat(),
+                    fraction = (snap.regionCoverageHerePct / 100.0).toFloat(),
                     accent = Palette.Verified,
                     onClick = { model.openTracker(Scope.COUNTRY) },
                     onShare = { model.shareCard(Scope.COUNTRY) },
