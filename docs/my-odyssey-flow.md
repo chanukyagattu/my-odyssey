@@ -9,25 +9,43 @@ the wireframe.
 
 | Page | Purpose | Built |
 |---|---|---|
-| P1 | Login / sign up | no |
-| P2 | Registration | no |
-| P3 | Home — W/C/S selection context, tracker + timeline entry | yes (Odyssey tab) |
-| P4 | World tracker | yes (scope = W) |
-| P5 | Country tracker | yes (scope = C) |
-| P6 | State tracker — must-go places, capture | yes (Tracker tab) |
-| P7 | Timeline @ world — Memories · Explore | yes (Timeline tab, scope = W) |
-| P8 | Timeline @ country — Memories · Explore | yes (Timeline tab, scope = C) |
-| P9 | Timeline @ state — Memories · Explore | yes (Timeline tab, scope = S) |
-| P10 | Forgot password — request link | no |
-| P11 | Forgot password — set new | no |
+| P1 | Login / sign up | yes — local accounts |
+| P2 | Registration | yes — local accounts |
+| P3 | Home — three tracker dials, TRACKER/TIMELINE tabs, hamburger, share | yes |
+| P4 | World tracker — countries | yes |
+| P5 | Country tracker — states, drills into P6 | yes |
+| P6 | State tracker — must-go places, capture | yes |
+| P7 | Timeline @ world — Memories · Explore | yes |
+| P8 | Timeline @ country — Memories · Explore | yes |
+| P9 | Timeline @ state — Memories · Explore | yes |
+| P10 | Forgot password — request link | no — needs a backend |
+| P11 | Forgot password — set new | no — needs a backend |
+| — | Hamburger menu: appearance, account, sign out, ledger | yes (not in wireframe) |
+
+### Navigation
+
+```
+P1 ⇄ P2          register lands you signed in, straight to P3
+P3 → P4 | P5 | P6    tap a tracker dial
+P5 → P6              tap a state row (selects it, then drills in)
+P4/P5/P6 → P3        back arrow
+TIMELINE tab:  P3 → P7 (W)   P4 → P7 (W)   P5 → P8 (C)   P6 → P9 (S)
+```
+
+The TIMELINE tab carries the page's scope with it, which is what the
+wireframe's "default: W / C / S" annotations specify.
 
 ---
 
 ## 2. Selection context (W / C / S)
 
-- **P3 is the sole owner.** Every other page reads the selection and none of
-  them write it. Enforced in code: `OdysseyRepository.select` / `selectState`
-  are the only mutators, and nothing in Explore calls them.
+- **One writer.** `OdysseyRepository.select` / `selectState` are the only
+  mutators in the system, reached through `AppModel`. Nothing in Explore calls
+  them — Explore is a reference list and stays read-only.
+- **Refinement.** Tapping a state row on P5 both selects that state and drills
+  into P6, because that *is* the country tracker's job. The rule that matters —
+  a single writer, never a screen mutating selection as a side effect of
+  rendering — still holds.
 - The C→S cascade is one-way. Changing country resets state; changing state
   never changes country.
 - Default state is **derived, not remembered**: the state of the most recent
@@ -82,9 +100,33 @@ ordering stays predictable while the two-metric tension stays visible.
 future canon releases" — not N greyed rows. They are in no denominator today,
 so they cannot quietly dilute a percentage.
 
-### Footer
+### The W / C / S selector
 
-FEED and MESSAGE render but are inert; both are open decisions (§8).
+Three small pies rather than tab buttons — the same fold the big dials show,
+shrunk. W is places coverage, C is states complete, S is places within the
+selected state.
+
+Green is done, pale is still to visit. Pale is its own colour token, not the
+amber used for *recorded but uncredited*: amber describes something that
+happened, pale describes something that has not. Sharing one would make the pies
+lie.
+
+Pale rather than a second hue is deliberate. Done-versus-remaining then
+separates by **luminance**, which survives greyscale and every form of colour
+blindness — a green/orange pairing is the classic red-green confusion case.
+Selection is carried by a ring and a filled letter, never by colour alone.
+
+### Footer — FEED and MESSAGE
+
+Placeholders. Their original jobs — seeing other people's travels, messaging
+them — need a server that does not exist, so neither claims to work. Open
+decision, revisited when there is a backend.
+
+The activity feed they would eventually surface is already built and tested:
+`activityFeed` reads your ledger back as sentences, ordered by **log position
+rather than timestamp**, because only `VisitRecorded` carries a wall clock —
+compensating events record that they happened, not when. It is reachable today
+under the hamburger as "Your activity".
 
 ---
 
@@ -164,6 +206,53 @@ physically impossible history.
 
 ---
 
+## 6a. Sharing — the card is the social feature
+
+There is no feed and no cloud photo library. What travels instead is a rendered
+**1080×1920 story card** of your progress, which you hand to the system share
+sheet yourself. Every dial on P3–P6 has its own "Share card" action, scoped to
+what that dial counts.
+
+This replaces an in-app feed on purpose. Distribution happens on networks that
+already hold your users' friends; it costs one PNG per share; and it takes on
+none of the obligations that hosting user images does — no CSAM detection, no
+DMCA agent, no moderation, no storage bill that grows forever against a
+seasonal product.
+
+It is also the growth loop. Anyone can post a travel photo. "38/100 places,
+every one GPS-verified" is a claim only this app can make, and it is the thing
+that makes a stranger ask which app that is.
+
+**The card is the entire privacy surface.** It is the only artefact that ever
+leaves the device, so its content is aggregate by construction: a score, never
+an itinerary. No place names, no state names, no dates, no coordinates. The
+state card deliberately does not name the state — naming it converts a score
+into a location, and the post is public forever. `ShareCardTest` asserts all of
+this against the real canon rather than trusting the copy to stay careful.
+
+Card copy and numbers are computed in `engine/ShareCard.kt` from the fold and
+unit-tested; only the rasterisation is platform code.
+
+---
+
+## 6b. Appearance
+
+Three modes under the hamburger: **Phone setting** (default), **Light**, **Dark**.
+Stored by `SettingsStore`, deliberately separate from the account — appearance
+belongs to the device, so it survives sign-out.
+
+Colour carries meaning in both schemes and the roles never move: verified /
+pending / danger / muted mean the same thing whichever way the phone is set.
+Only surfaces flip. The light scheme darkens the accents rather than reusing
+them — the dark-scheme mint fails contrast as text on white, and these
+percentages have to be readable in direct sun at a trailhead.
+
+Themes resolve through a composition local, so `Palette.Verified` at every call
+site re-themes for free. The one constraint: a `DrawScope` lambda is not a
+composable, so ring colours are hoisted before the `Canvas` block.
+
+---
+
 ## 7. Account
 
 - Account actions live in the hamburger menu.
@@ -176,7 +265,9 @@ physically impossible history.
 ## 8. Open decisions
 
 1. Phone number optional at registration?
-2. FEED vs. notifications behaviour for the MESSAGE button.
+2. FEED vs. notifications behaviour for the MESSAGE button. Still open — both
+   render as placeholders. The activity feed exists under the hamburger in the
+   meantime.
 3. ~~Place-list screen under P6~~ — **closed**: P6 lists the state's canon
    places inline with capture; P9 Explore is the read-only reference view.
 4. Live vs. retrospective Timeline posting.

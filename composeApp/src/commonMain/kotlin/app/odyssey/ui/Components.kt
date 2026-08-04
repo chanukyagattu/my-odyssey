@@ -55,6 +55,12 @@ fun ProgressRing(
     accent: Color,
     modifier: Modifier = Modifier,
 ) {
+    // Hoisted: a DrawScope lambda is not a composable, so it cannot read the
+    // theme's composition local directly.
+    val trackColor = Palette.SurfaceHigh
+    val labelColor = Palette.Text
+    val captionColor = Palette.Muted
+
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = modifier) {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.size(132.dp)) {
             Canvas(modifier = Modifier.fillMaxSize()) {
@@ -65,7 +71,7 @@ fun ProgressRing(
                     size.height - stroke,
                 )
                 drawArc(
-                    color = Palette.SurfaceHigh,
+                    color = trackColor,
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter = false,
@@ -86,8 +92,8 @@ fun ProgressRing(
                 }
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(label, fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Palette.Text)
-                Text(caption, fontSize = 11.sp, color = Palette.Muted, textAlign = TextAlign.Center)
+                Text(label, fontSize = 26.sp, fontWeight = FontWeight.Bold, color = labelColor)
+                Text(caption, fontSize = 11.sp, color = captionColor, textAlign = TextAlign.Center)
             }
         }
     }

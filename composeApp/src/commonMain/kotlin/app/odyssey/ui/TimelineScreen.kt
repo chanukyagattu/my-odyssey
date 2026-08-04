@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import app.odyssey.AppModel
+import app.odyssey.Route
 import app.odyssey.TimelineTab
 import app.odyssey.engine.Countries
 import app.odyssey.engine.ExploreGroup
@@ -61,30 +62,32 @@ fun TimelineScreen(model: AppModel) {
                 },
             )
 
-            Segmented(
-                options = listOf("W", "C", "S"),
-                selectedIndex = when (scope) {
-                    Scope.WORLD -> 0
-                    Scope.COUNTRY -> 1
-                    Scope.STATE -> 2
-                },
-                onSelect = {
-                    model.setScope(
-                        when (it) {
-                            0 -> Scope.WORLD
-                            1 -> Scope.COUNTRY
-                            else -> Scope.STATE
-                        },
-                    )
-                },
-            )
+            val (stateDone, stateTotal) = snap.result.stateProgress(snap.selection.usState)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                ScopePie(
+                    letter = "W",
+                    fraction = (snap.result.placesCoveragePct / 100.0).toFloat(),
+                    selected = scope == Scope.WORLD,
+                ) { model.setScope(Scope.WORLD) }
+                ScopePie(
+                    letter = "C",
+                    fraction = (snap.result.stateCoveragePct / 100.0).toFloat(),
+                    selected = scope == Scope.COUNTRY,
+                ) { model.setScope(Scope.COUNTRY) }
+                ScopePie(
+                    letter = "S",
+                    fraction = if (stateTotal == 0) 0f else stateDone.toFloat() / stateTotal,
+                    selected = scope == Scope.STATE,
+                ) { model.setScope(Scope.STATE) }
+            }
 
-            Box(modifier = Modifier.height(12.dp))
+            Box(modifier = Modifier.height(14.dp))
 
-            val feed = model.memoryFeed()
-            val groups = model.explore()
             Segmented(
-                options = listOf("Memories · ${feed.size}", "Explore · ${groups.sumOf { it.remaining }}"),
+                options = listOf("Memories", "Explore"),
                 selectedIndex = if (model.timelineTab == TimelineTab.MEMORIES) 0 else 1,
                 onSelect = {
                     model.timelineTab = if (it == 0) TimelineTab.MEMORIES else TimelineTab.EXPLORE
@@ -296,6 +299,15 @@ private fun ExploreRow(item: ExploreItem) {
 
 // ------------------------------------------------------------------ footer
 
+/**
+ * The footer from the wireframe. Both buttons are placeholders for now — their
+ * original jobs (other people's travels, messaging them) need a server that
+ * does not exist yet, so neither claims to work.
+ *
+ * The activity feed they will eventually surface is already built and tested;
+ * it lives under the hamburger as "Your activity" until these two get a
+ * decision.
+ */
 @Composable
 private fun FeedMessageBar(model: AppModel) {
     Row(
@@ -313,7 +325,7 @@ private fun FeedMessageBar(model: AppModel) {
                     .clip(RoundedCornerShape(10.dp))
                     .border(1.dp, Palette.Line, RoundedCornerShape(10.dp))
                     .clickable {
-                        model.toast = "$label is still an open decision (flow spec §8) — not in this slice."
+                        model.toast = "$label is a placeholder — still an open decision (flow spec §8)."
                     }
                     .padding(vertical = 10.dp),
             ) {
